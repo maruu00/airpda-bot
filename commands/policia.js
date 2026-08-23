@@ -138,6 +138,13 @@ const data = [
   new SlashCommandBuilder()
     .setName('auxilio')
     .setDescription('Llamar a los servicios médicos / EMT del LSFD'),
+
+  new SlashCommandBuilder()
+    .setName('quitar-sucio')
+    .setDescription('[POLICÍA] Quitar dinero sucio a un ciudadano')
+    .addUserOption(o => o.setName('usuario').setDescription('Ciudadano').setRequired(true))
+    .addIntegerOption(o => o.setName('cantidad').setDescription('Cantidad a quitar (0 = todo)').setRequired(false).setMinValue(0))
+    .addStringOption(o => o.setName('motivo').setDescription('Motivo del decomiso').setRequired(true).setMaxLength(300)),
 ];
 
 // ─── Execute handler ──────────────────────────────────────────────────────────
@@ -760,6 +767,49 @@ async function execute(interaction, client) {
     } catch {}
     return;
   }
+
+  // ── QUITAR SUCIO (DECOMISAR) — solo último atraco ─────────────────────────
+  if (cmd === 'quitar-sucio') {
+    if (!(await esPolicía(interaction, gc))) return interaction.reply({ embeds: [E.err('Sin permisos', 'Solo policías pueden decomisar dinero sucio.')], ephemeral: true });
+    await interaction.deferReply({ ephemeral: true });
+    const target = interaction.options.getUser('usuario');
+    const cantidadReq = interaction.options.getInteger('cantidad') || 0;
+    const motivo = interaction.options.getString('motivo');
+    const ciudadano = await getPlayer(target.id, target.username);
+    const agente = await getPlayer(interaction.user.id, interaction.user.username);
+    const ultimoBotin = ciudadano?.ultimoAtracoBotin || 0;
+    if (!ciudadano || ciudadano.dineroSucio <= 0 || ultimoBotin <= 0) {
+      return interaction.editReply({ embeds: [E.warn('Sin botín reciente', `${ciudadano ? ciudadano.getFullName() : target.username} no tiene un atraco reciente con dinero sucio pendiente.${ultimoBotin === 0 && ciudadano?.dineroSucio > 0 ? ' (tiene sucio acumulado pero no del último atraco)' : ''}`)] });
+    }
+    const maxDecomisable = Math.min(ultimoBotin, ciudadano.dineroSucio);
+    const cantidad = cantidadReq <= 0 ? maxDecomisable : Math.min(cantidadReq, maxDecomisable);
+    ciudadano.dineroSucio -= cantidad;
+    if (cantidad >= ultimoBotin) {
+      ciudadano.ultimoAtracoBotin = 0;
+      ciudadano.ultimoAtracoFecha = null;
+    } else {
+      ciudadano.ultimoAtracoBotin -= cantidad;
+    }
+    await ciudadano.save();
+    const embed = new EmbedBuilder()
+      .setColor(0xf59e0b)
+      .setTitle('🧹 Decomiso — Dinero sucio')
+      .setThumbnail('https://i.imgur.com/3U9wBG1.png')
+      .addFields(
+        { name: '👮 Agente', value: `${agente.getFullName()} (<@${interaction.user.id}>)`, inline: true },
+        { name: '🎯 Ciudadano', value: `${ciudadano.getFullName()} (<@${target.id}>)`, inline: true },
+        { name: '🪪 DNI', value: `\`${require('../utils/embeds').getDNI(target.id)}\``, inline: true },
+        { name: '💸 Decomisado', value: `**${formatMoney(cantidad)}**`, inline: true },
+        { name: '🧹 Restante sucio', value: formatMoney(ciudadano.dineroSucio), inline: true },
+        { name: '📋 Motivo', value: motivo, inline: false },
+      )
+      .setFooter({ text: `Decomisado por ${agente.getFullName()} • ${new Date().toLocaleTimeString('es-ES')}` })
+      .setTimestamp();
+    try {
+      await target.send({ embeds: [new EmbedBuilder().setColor(0xef4444).setTitle('🚨 Dinero sucio decomisado').setDescription(`Un agente te ha decomisado **${formatMoney(cantidad)}** de dinero sucio.\n**Motivo:** ${motivo}\n**Agente:** ${agente.getFullName()}`)] }).catch(() => {});
+    } catch {}
+    return interaction.editReply({ embeds: [embed] });
+  }
 }
 
 // ─── Prefix commands ──────────────────────────────────────────────────────────
@@ -930,6 +980,40 @@ const prefixCommands = [
       if (!placas.length) return message.reply('No hay agentes con placa registrada.');
       const embed = new EmbedBuilder().setColor(0x3b82f6).setTitle('📡 Disponibilidad Policial')
         .setDescription(placas.map(p => `👮 **${p.nombre}** — ${p.rango} (${p.departamento})`).join('\n')).setTimestamp();
+      await message.reply({ embeds: [embed] });
+    },
+  },
+  {
+    name: 'quitar-sucio',
+    aliases: ['decomisar', 'confiscar'],
+    description: '!quitar-sucio @usuario [cantidad|0=todo] [motivo] — Quitar dinero sucio',
+    async run(message, args) {
+      const gc = await GuildConfig.findOne({ guildId: message.guild.id });
+      if (!(await esPolicíaMsg(message, gc))) return message.reply('❌ Sin permisos de agente.');
+      const target = message.mentions.users.first();
+      if (!target) return message.reply('❌ Menciona un usuario. Ej: `!quitar-sucio @usuario 500 motivo`');
+      let cantidad = parseInt(args[1]);
+      let motivo = args.slice(2).join(' ');
+      if (isNaN(cantidad)) { cantidad = 0; motivo = args.slice(1).join(' ') || 'Decomiso policial'; }
+      if (!motivo) motivo = 'Decomiso policial';
+      const ciudadano = await getPlayer(target.id, target.username);
+      const agente = await getPlayer(message.author.id, message.author.username);
+      const ultimoBotin = ciudadano?.ultimoAtracoBotin || 0;
+      if (!ciudadano || ciudadano.dineroSucio <= 0 || ultimoBotin <= 0) return message.reply(`✅ **${ciudadano ? ciudadano.getFullName() : target.username}** no tiene un atraco reciente con dinero sucio pendiente.${ultimoBotin === 0 && ciudadano?.dineroSucio > 0 ? ' (tiene sucio acumulado pero no del último atraco)' : ''}`);
+      const maxDecomisable = Math.min(ultimoBotin, ciudadano.dineroSucio);
+      const cant = cantidad <= 0 ? maxDecomisable : Math.min(cantidad, maxDecomisable);
+      ciudadano.dineroSucio -= cant;
+      if (cant >= ultimoBotin) { ciudadano.ultimoAtracoBotin = 0; ciudadano.ultimoAtracoFecha = null; } else { ciudadano.ultimoAtracoBotin -= cant; }
+      await ciudadano.save();
+      const embed = new EmbedBuilder().setColor(0xf59e0b).setTitle('🧹 Decomiso — Dinero sucio').setThumbnail('https://i.imgur.com/3U9wBG1.png')
+        .addFields(
+          { name: '👮 Agente', value: agente.getFullName(), inline: true },
+          { name: '🎯 Ciudadano', value: ciudadano.getFullName(), inline: true },
+          { name: '💸 Decomisado', value: formatMoney(cant), inline: true },
+          { name: '🧹 Restante sucio', value: formatMoney(ciudadano.dineroSucio), inline: true },
+          { name: '📋 Motivo', value: motivo, inline: false },
+        ).setTimestamp();
+      try { await target.send({ embeds: [new EmbedBuilder().setColor(0xef4444).setTitle('🚨 Dinero sucio decomisado').setDescription(`Un agente te ha decomisado **${formatMoney(cant)}**.\n**Motivo:** ${motivo}\n**Agente:** ${agente.getFullName()}`)] }).catch(() => {}); } catch {}
       await message.reply({ embeds: [embed] });
     },
   },

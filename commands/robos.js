@@ -86,6 +86,7 @@ const ROBOS = {
     armas: 'Solo armas blancas',
     descripcion: 'Una rápida licorería. Botín en efectivo y bebidas.',
     items: [{ id: 'alcohol', nombre: 'Botella de alcohol', emoji: '🍾', cantidad: [1, 3] }],
+    esTienda: true,
   },
   peluqueria: {
     nombre: 'Peluquería',
@@ -100,6 +101,7 @@ const ROBOS = {
     armas: 'Solo armas blancas',
     descripcion: 'La peluquería del barrio. No esperes mucho.',
     items: [],
+    esTienda: true,
   },
   tatuajes: {
     nombre: 'Estudio de Tatuajes',
@@ -114,6 +116,7 @@ const ROBOS = {
     armas: 'Solo armas blancas',
     descripcion: 'El dinero de la caja y algo de equipo.',
     items: [{ id: 'tinta', nombre: 'Tinta de tatuaje', emoji: '🖊️', cantidad: [1, 2] }],
+    esTienda: true,
   },
   casa: {
     nombre: 'Robo de Casa',
@@ -161,6 +164,7 @@ const ROBOS = {
     armas: 'Solo armas blancas',
     descripcion: 'La tienda de la esquina. Más botín que una licorería.',
     items: [{ id: 'comida', nombre: 'Comida robada', emoji: '🥫', cantidad: [2, 5] }],
+    esTienda: true,
   },
   ropa: {
     nombre: 'Tienda de Ropa',
@@ -175,6 +179,7 @@ const ROBOS = {
     armas: 'Solo armas blancas',
     descripcion: 'Ropa de marca y algo de caja.',
     items: [{ id: 'ropa_robada', nombre: 'Ropa robada', emoji: '👕', cantidad: [2, 6] }],
+    esTienda: true,
   },
   desguace: {
     nombre: 'Desguace (Establecimiento)',
@@ -187,9 +192,9 @@ const ROBOS = {
     minPolicia: 1, maxPolicia: 4,
     maxAtracadores: 2,
     armas: 'Solo armas blancas',
-    rehenes: 1,
-    descripcion: 'El almacén de piezas. Requiere 1 rehén NPC.',
+    descripcion: 'El almacén de piezas. Rehenes aleatorios 1-4.',
     items: [{ id: 'piezas_coche', nombre: 'Piezas de coche', emoji: '⚙️', cantidad: [3, 8] }],
+    esTienda: true,
   },
 
   // ── MAYORES (Solo Bandas Oficiales) ─────────────────────────────────────────
@@ -210,6 +215,7 @@ const ROBOS = {
       { id: 'laptop', nombre: 'Laptop robada', emoji: '💻', cantidad: [1, 3] },
       { id: 'movil_gama', nombre: 'Móvil gama alta', emoji: '📱', cantidad: [2, 5] },
     ],
+    esTienda: true,
   },
   pawnshop: {
     nombre: 'Pawnshop',
@@ -228,6 +234,7 @@ const ROBOS = {
       { id: 'joya', nombre: 'Joya empeñada', emoji: '💍', cantidad: [1, 4] },
       { id: 'reloj_lujo', nombre: 'Reloj de lujo', emoji: '⌚', cantidad: [0, 2] },
     ],
+    esTienda: true,
   },
   farmacia: {
     nombre: 'Farmacia / Ammu-Nation',
@@ -246,6 +253,7 @@ const ROBOS = {
       { id: 'medicamento', nombre: 'Medicamentos robados', emoji: '💊', cantidad: [5, 15] },
       { id: 'municion', nombre: 'Munición robada', emoji: '🔫', cantidad: [2, 6] },
     ],
+    esTienda: true,
   },
   yate: {
     nombre: 'Yate',
@@ -291,21 +299,21 @@ const ROBOS = {
 
 async function ejecutarMinijuego(interaction, player, robo, inv) {
   const fases = robo.nivel === 'mayor' ? 3 : robo.nivel === 'mediano' ? 2 : 1;
+  const rehenes = robo.esTienda ? rand(1, 4) : 0;
 
   // Fase 1 — Preparación
   const prepEmbed = new EmbedBuilder()
     .setColor(0x1a1a2e)
     .setTitle(`${robo.emoji} Atraco — ${robo.nombre}`)
     .setDescription(
-      `**Nivel:** ${robo.nivel.toUpperCase()}\n` +
-      `**Policía necesaria:** ${robo.minPolicia}-${robo.maxPolicia} unidades\n` +
-      `**Atracadores máx:** ${robo.maxAtracadores}\n` +
-      `**Armas:** ${robo.armas}\n\n` +
+      `**Nivel:** ${robo.nivel.toUpperCase()}  **|**  **Policía:** ${robo.minPolicia}-${robo.maxPolicia}  **|**  **Máx:** ${robo.maxAtracadores}\n` +
+      `**Armas:** ${robo.armas}\n` +
+      (rehenes ? `👥 **Rehenes:** ${rehenes} ${rehenes === 1 ? 'rehén tomado' : 'rehenes tomados'} (aleatorio 1-4)\n` : '') + `\n` +
       `> ${robo.descripcion}\n\n` +
-      `💰 **Botín estimado:** ${formatMoney(robo.rewardMin)} — ${formatMoney(robo.rewardMax)} (dinero sucio)\n` +
-      `⚠️ **Riesgo de fallo:** ${Math.round(robo.failChance * 100)}%\n` +
-      (robo.inicia2Tiros ? '\n🔫 **Este robo se inicia con 2 disparos al aire.**\n' : '') +
-      (robo.bandaOficial ? '\n👥 **Solo Bandas Oficiales.**\n' : ''),
+      `💰 **Botín:** ${formatMoney(robo.rewardMin)} — ${formatMoney(robo.rewardMax)} (sucio)\n` +
+      `⚠️ **Riesgo:** ${Math.round(robo.failChance * 100)}%` +
+      (robo.inicia2Tiros ? '  ·  🔫 2 disparos al aire' : '') +
+      (robo.bandaOficial ? '  ·  👥 Solo Bandas' : ''),
     )
     .setThumbnail(robo.imagen)
     .setFooter({ text: 'Tienes 30 segundos para confirmar' })
@@ -432,6 +440,8 @@ async function ejecutarMinijuego(interaction, player, robo, inv) {
   // ─── Éxito ────────────────────────────────────────────────────────────────
   const botín = rand(robo.rewardMin, robo.rewardMax);
   player.dineroSucio += botín;
+  player.ultimoAtracoBotin = botín;
+  player.ultimoAtracoFecha = new Date();
   player.robosRealizados++;
   player.setCooldown(`rob_${robo.nombre}`, new Date());
   player.addXP(rand(30, 100));
@@ -453,11 +463,12 @@ async function ejecutarMinijuego(interaction, player, robo, inv) {
   const exitoEmbed = new EmbedBuilder()
     .setColor(0x00ff88)
     .setTitle(`✅ ATRACO EXITOSO — ${robo.emoji} ${robo.nombre}`)
-    .setDescription(`¡Escapaste con el botín! La policía no llegó a tiempo.`)
+    .setDescription(`¡Escapaste con el botín! La policía no llegó a tiempo.${rehenes ? `\n👥 **${rehenes} ${rehenes === 1 ? 'rehén liberado' : 'rehenes liberados'}**` : ''}`)
     .setThumbnail(robo.imagen)
     .addFields(
       { name: '💊 Dinero sucio ganado', value: `**${formatMoney(botín)}**`, inline: true },
       { name: '🧹 Total dinero sucio', value: formatMoney(player.dineroSucio), inline: true },
+      rehenes ? { name: '👥 Rehenes', value: `**${rehenes}** ${rehenes === 1 ? 'rehén' : 'rehenes'} tomado${rehenes === 1 ? '' : 's'}`, inline: true } : { name: '​', value: '​', inline: true },
       itemsGanados.length
         ? { name: '🎒 Items robados', value: itemsGanados.join('\n'), inline: false }
         : { name: '​', value: '​', inline: false },
@@ -465,7 +476,7 @@ async function ejecutarMinijuego(interaction, player, robo, inv) {
         ? { name: gangXp.subio ? '⬆️ Banda subió de nivel' : gangXp.gangNombre, value: gangXp.subio ? `**${gangXp.gangNombre}** ahora es **nivel ${gangXp.nivel}**` : `Atraco sumado a la banda de ${gangXp.gangNombre}`, inline: true }
         : { name: '​', value: '​', inline: true },
     )
-    .setFooter({ text: '💡 Blanquea el dinero sucio con /blanquear' })
+    .setFooter({ text: `💡 Blanquea el dinero sucio con /blanquear — Hoy a las ${new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}` })
     .setTimestamp();
 
   await interaction.editReply({ embeds: [exitoEmbed], components: [] });
@@ -485,7 +496,7 @@ async function ejecutarMinijuego(interaction, player, robo, inv) {
           .setTitle(`🚨 ALERTA POLICIAL — ATRACO ACTIVO`)
           .setDescription(
             `Se ha registrado un atraco en **${robo.emoji} ${robo.nombre}**.\n` +
-            `El perpetrador ha escapado con el botín.`,
+            `El perpetrador ha escapado con el botín.${rehenes ? `\n👥 **Rehenes:** ${rehenes} civile${rehenes === 1 ? '' : 's'} retenido${rehenes === 1 ? '' : 's'}` : ''}`,
           )
           .setThumbnail(interaction.user.displayAvatarURL({ dynamic: true }))
           .addFields(
@@ -495,6 +506,7 @@ async function ejecutarMinijuego(interaction, player, robo, inv) {
             { name: '📍 Establecimiento', value: `${robo.emoji} ${robo.nombre} (Nivel: ${robo.nivel.toUpperCase()})`, inline: true },
             { name: '💊 Botín estimado', value: `**${formatMoney(botín)}** en dinero sucio`,               inline: true },
             { name: '⚠️ Armas',         value: robo.armas,                                                inline: true },
+            ...(rehenes ? [{ name: '👥 Rehenes', value: `**${rehenes}** ${rehenes === 1 ? 'rehén' : 'rehenes'}`, inline: true }] : []),
             { name: '📊 Historial',     value: `Arrestos: ${player.arrestos} · Robos: ${player.robosRealizados}`, inline: false },
           )
           .setFooter({ text: `AmericanRP  ·  Sistema de Robos  •  ${new Date().toLocaleTimeString('es-ES')}` })
@@ -515,6 +527,7 @@ async function ejecutarMinijuego(interaction, player, robo, inv) {
 // ─── Minijuego para prefix (!atracar) ─────────────────────────────────────────
 async function ejecutarMinijuegoPrefix(message, player, robo, inv) {
   const fases = robo.nivel === 'mayor' ? 3 : robo.nivel === 'mediano' ? 2 : 1;
+  const rehenesPrefix = robo.esTienda ? rand(1, 4) : 0;
 
   const colores = ['🔴', '🟡', '🟢', '🔵'];
   const empezar = async (faseActual) => {
@@ -548,6 +561,8 @@ async function ejecutarMinijuegoPrefix(message, player, robo, inv) {
         // Todas las fases completadas → ÉXITO
         const botín = rand(robo.rewardMin, robo.rewardMax);
         player.dineroSucio += botín;
+        player.ultimoAtracoBotin = botín;
+        player.ultimoAtracoFecha = new Date();
         player.robosRealizados++;
         player.addXP(rand(30, 80));
         await player.save();
@@ -560,7 +575,7 @@ async function ejecutarMinijuegoPrefix(message, player, robo, inv) {
           embeds: [new EmbedBuilder()
             .setColor(0x00ff88)
             .setTitle(`✅ Atraco exitoso — ${robo.emoji} ${robo.nombre}`)
-            .setDescription(`Has completado las **${fases} fases** con éxito.\n💰 Botín: **${formatMoney(botín)}** (dinero sucio)${gangXp ? `\n\n${gangXp.subio ? `⬆️ **${gangXp.gangNombre} subió a nivel ${gangXp.nivel}!**` : `👥 Atraco sumado a ${gangXp.gangNombre}`}` : ''}`)
+            .setDescription(`Has completado las **${fases} fases** con éxito.\n💰 Botín: **${formatMoney(botín)}** (dinero sucio)${rehenesPrefix ? `\n👥 **${rehenesPrefix} ${rehenesPrefix === 1 ? 'rehén' : 'rehenes'}**` : ''}${gangXp ? `\n\n${gangXp.subio ? `⬆️ **${gangXp.gangNombre} subió a nivel ${gangXp.nivel}!**` : `👥 Atraco sumado a ${gangXp.gangNombre}`}` : ''}`)
             .setTimestamp()],
           components: [],
         });
@@ -626,6 +641,7 @@ async function enviarAlertaPolicia(message, robo, player, fallo) {
     const ch = await message.guild.channels.fetch(chId).catch(() => null);
     if (!ch) return;
 
+    const rehenesAlert = robo.esTienda ? rand(1, 4) : 0;
     const embed = new EmbedBuilder()
       .setColor(fallo ? 0xef4444 : 0xf59e0b)
       .setTitle(fallo ? '🚨 ALARMA — Atraco fallido' : '🔔 Posible atraco en curso')
@@ -634,7 +650,8 @@ async function enviarAlertaPolicia(message, robo, player, fallo) {
         `**Sospechoso:** ${message.author.tag}\n` +
         `**Nivel:** ${robo.nivel.toUpperCase()}\n` +
         `**Estado:** ${fallo ? '❌ Fallido — Sospechoso arrestado' : '⚠️ En curso — Posible huida'}` +
-        (fallo ? '' : `\n**Botín:** ${formatMoney(rand(robo.rewardMin, robo.rewardMax))}`)
+        (fallo ? '' : `\n**Botín:** ${formatMoney(rand(robo.rewardMin, robo.rewardMax))}`) +
+        (rehenesAlert ? `\n👥 **Rehenes:** ${rehenesAlert}` : '')
       )
       .setTimestamp()
       .setFooter({ text: 'AmericanRP · Alerta de robos' });
