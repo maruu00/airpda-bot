@@ -159,7 +159,7 @@ async function execute(interaction, client) {
         { name: '💰 Dinero inicial', value: `💵 Cash: ${formatMoney(player.cash)} · 🏦 Banco: ${formatMoney(player.bank)}`, inline: false },
         { name: '📋 Primeros pasos', value: '• `/trabajo lista` para buscar empleo\n• `/tienda` para comprar items\n• `/banco crear` para abrir cuenta bancaria\n• `!me` o `!do` para narrar acciones RP', inline: false },
       )
-      .setFooter({ text: 'AmericanRP · ¡Bienvenido!' })
+      .setFooter({ text: 'American Island Rp · ¡Bienvenido!' })
       .setTimestamp();
 
     return interaction.reply({ embeds: [embed] });

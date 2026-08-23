@@ -181,7 +181,7 @@ async function execute(interaction, client) {
         { name: '🪪 DNI Detenido', value: `\`${E.getDNI(target.id)}\``, inline: true },
         { name: '📋 Motivo', value: motivo, inline: false },
       )
-      .setFooter({ text: 'AmericanRP · Sistema Policial' })
+      .setFooter({ text: 'American Island Rp · Sistema Policial' })
       .setTimestamp();
     addImage(embed, 'policia');
 
@@ -459,7 +459,7 @@ async function execute(interaction, client) {
         { name: '⛓️ Esposado',     value: ciudadano.esposado ? '⛓️ SÍ' : '✅ No', inline: true },
         { name: '🎒 Items',        value: `${inventario?.items?.length || 0} tipos`, inline: true },
       )
-      .setFooter({ text: `Cacheado por ${interaction.user.username}  ·  AmericanRP` })
+      .setFooter({ text: `Cacheado por ${interaction.user.username}  ·  American Island Rp` })
       .setTimestamp();
 
     return interaction.editReply({ embeds: [embed] });
@@ -482,7 +482,7 @@ async function execute(interaction, client) {
         { name: '👮 Agente', value: `<@${interaction.user.id}>`, inline: true },
         { name: '🎯 Escoltado', value: `<@${target.id}>`, inline: true },
       )
-      .setFooter({ text: 'AmericanRP · Escolta activa' })
+      .setFooter({ text: 'American Island Rp · Escolta activa' })
       .setTimestamp();
 
     return interaction.reply({ embeds: [embed] });
@@ -545,7 +545,7 @@ async function execute(interaction, client) {
         { name: '🏛️ Departamento', value: placa.departamento, inline: true },
         { name: '✅ Estado', value: placa.activa ? '🟢 Activa' : '🔴 Inactiva', inline: true },
       )
-      .setFooter({ text: `AmericanRP · ${placa.departamento}` })
+      .setFooter({ text: `American Island Rp · ${placa.departamento}` })
       .setTimestamp();
 
     return interaction.reply({ embeds: [embed] });
@@ -663,7 +663,7 @@ async function execute(interaction, client) {
       .setTitle('📡 DISPONIBILIDAD POLICIAL')
       .setDescription(`**${agente.getFullName()}** ha actualizado su disponibilidad.`)
       .addFields({ name: '📊 Estado', value: info.label, inline: true })
-      .setFooter({ text: 'AmericanRP · Sistema de Disponibilidad' })
+      .setFooter({ text: 'American Island Rp · Sistema de Disponibilidad' })
       .setTimestamp();
 
     // Guardar en player metadata
@@ -751,7 +751,7 @@ async function execute(interaction, client) {
         { name: '❤️ Salud', value: `${player.salud}%`, inline: true },
         { name: '🚑 Servicio', value: 'LSFD — Unidad médica requerida', inline: false },
       )
-      .setFooter({ text: 'AmericanRP · Emergencias' })
+      .setFooter({ text: 'American Island Rp · Emergencias' })
       .setTimestamp();
 
     await interaction.reply({ embeds: [embed] });
@@ -941,7 +941,7 @@ const prefixCommands = [
             { name: '⛓️ Esposado', value: ciudadano.esposado ? '⛓️ SÍ' : '✅ No', inline: true },
             { name: '🎒 Items', value: `${inventario?.items?.length || 0} tipos`, inline: true },
           )
-          .setFooter({ text: `Cacheado por ${message.author.username}  ·  AmericanRP` })
+          .setFooter({ text: `Cacheado por ${message.author.username}  ·  American Island Rp` })
           .setTimestamp()],
       });
     },

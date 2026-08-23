@@ -89,7 +89,7 @@ async function execute(interaction, client) {
       .setDescription(`*${descripciones[cmd]}*`)
       .setAuthor({ name: `ACCIÓN | ${player.getFullName()}` })
       .addFields({ name: '🎯 Objetivo', value: `<@${target.id}>`, inline: true })
-      .setFooter({ text: 'AmericanRP RP' })
+      .setFooter({ text: 'American Island Rp RP' })
       .setTimestamp();
 
     return interaction.reply({ embeds: [embed] });
@@ -105,7 +105,7 @@ async function execute(interaction, client) {
       .setColor(config.colors.dark)
       .setDescription(`*${player.getFullName()} ${accion === 'abrir' ? 'abre' : 'cierra'} ${partes[parte] || parte}.*`)
       .setAuthor({ name: `VEHÍCULO | ${player.getFullName()}` })
-      .setFooter({ text: 'AmericanRP RP' })
+      .setFooter({ text: 'American Island Rp RP' })
       .setTimestamp();
 
     return interaction.reply({ embeds: [embed] });
@@ -128,7 +128,7 @@ async function execute(interaction, client) {
       .setColor(config.colors.dark)
       .setDescription(`*📞 **${player.getFullName()}** llama a **${receptor.getFullName()}**: "${mensaje}"*`)
       .setAuthor({ name: `LLAMADA | ${player.getFullName()}` })
-      .setFooter({ text: 'AmericanRP RP' })
+      .setFooter({ text: 'American Island Rp RP' })
       .setTimestamp();
 
     await interaction.reply({ embeds: [rpEmbed] });

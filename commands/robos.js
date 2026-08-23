@@ -77,7 +77,6 @@ const ROBOS = {
     nombre: 'Licorería',
     nivel: 'express',
     emoji: '🍾',
-    imagen: 'https://i.imgur.com/RFJxAM2.png',
     rewardMin: 500,  rewardMax: 1500,
     failChance: 0.20,
     cooldown: 20 * 60 * 1000,
@@ -92,7 +91,6 @@ const ROBOS = {
     nombre: 'Peluquería',
     nivel: 'express',
     emoji: '✂️',
-    imagen: 'https://i.imgur.com/lBVkuoh.png',
     rewardMin: 300,  rewardMax: 800,
     failChance: 0.18,
     cooldown: 15 * 60 * 1000,
@@ -107,7 +105,6 @@ const ROBOS = {
     nombre: 'Estudio de Tatuajes',
     nivel: 'express',
     emoji: '🖊️',
-    imagen: 'https://i.imgur.com/5u7Xw3f.png',
     rewardMin: 400,  rewardMax: 1000,
     failChance: 0.20,
     cooldown: 20 * 60 * 1000,
@@ -122,7 +119,6 @@ const ROBOS = {
     nombre: 'Robo de Casa',
     nivel: 'express',
     emoji: '🏠',
-    imagen: 'https://i.imgur.com/Qcn3Hap.png',
     rewardMin: 200,  rewardMax: 600,
     failChance: 0.22,
     cooldown: 25 * 60 * 1000,
@@ -139,7 +135,6 @@ const ROBOS = {
     nombre: 'Coche de Importación',
     nivel: 'express',
     emoji: '🚗',
-    imagen: 'https://i.imgur.com/Whe9KSJ.png',
     rewardMin: 1200,  rewardMax: 4000,
     failChance: 0.30,
     cooldown: 30 * 60 * 1000,
@@ -155,7 +150,6 @@ const ROBOS = {
     nombre: 'Badulaque / LTD',
     nivel: 'mediano',
     emoji: '🏪',
-    imagen: 'https://i.imgur.com/7KmxUiY.png',
     rewardMin: 800,  rewardMax: 2000,
     failChance: 0.28,
     cooldown: 35 * 60 * 1000,
@@ -170,7 +164,6 @@ const ROBOS = {
     nombre: 'Tienda de Ropa',
     nivel: 'mediano',
     emoji: '👕',
-    imagen: 'https://i.imgur.com/9u3qBkg.png',
     rewardMin: 600,  rewardMax: 1500,
     failChance: 0.26,
     cooldown: 30 * 60 * 1000,
@@ -185,7 +178,6 @@ const ROBOS = {
     nombre: 'Desguace (Establecimiento)',
     nivel: 'mediano',
     emoji: '🔧',
-    imagen: 'https://i.imgur.com/6nCN9Ux.png',
     rewardMin: 1000,  rewardMax: 2500,
     failChance: 0.30,
     cooldown: 40 * 60 * 1000,
@@ -202,7 +194,6 @@ const ROBOS = {
     nombre: 'Tienda de Electrónica',
     nivel: 'mayor',
     emoji: '📱',
-    imagen: 'https://i.imgur.com/kDxLtgf.png',
     rewardMin: 3000,  rewardMax: 8000,
     failChance: 0.40,
     cooldown: 60 * 60 * 1000,
@@ -221,7 +212,6 @@ const ROBOS = {
     nombre: 'Pawnshop',
     nivel: 'mayor',
     emoji: '🏷️',
-    imagen: 'https://i.imgur.com/3U9wBG1.png',
     rewardMin: 2500,  rewardMax: 6000,
     failChance: 0.38,
     cooldown: 60 * 60 * 1000,
@@ -240,7 +230,6 @@ const ROBOS = {
     nombre: 'Farmacia / Ammu-Nation',
     nivel: 'mayor',
     emoji: '💊',
-    imagen: 'https://i.imgur.com/cW2vdDV.png',
     rewardMin: 4000,  rewardMax: 10000,
     failChance: 0.42,
     cooldown: 75 * 60 * 1000,
@@ -259,7 +248,6 @@ const ROBOS = {
     nombre: 'Yate',
     nivel: 'mayor',
     emoji: '🛥️',
-    imagen: 'https://i.imgur.com/VNmD8Z5.png',
     rewardMin: 8000,  rewardMax: 20000,
     failChance: 0.45,
     cooldown: 90 * 60 * 1000,
@@ -277,7 +265,6 @@ const ROBOS = {
     nombre: 'Joyería',
     nivel: 'mayor',
     emoji: '💎',
-    imagen: 'https://i.imgur.com/2oNRFqJ.png',
     rewardMin: 15000,  rewardMax: 40000,
     failChance: 0.50,
     cooldown: 120 * 60 * 1000,
@@ -315,7 +302,6 @@ async function ejecutarMinijuego(interaction, player, robo, inv) {
       (robo.inicia2Tiros ? '  ·  🔫 2 disparos al aire' : '') +
       (robo.bandaOficial ? '  ·  👥 Solo Bandas' : ''),
     )
-    .setThumbnail(robo.imagen)
     .setFooter({ text: 'Tienes 30 segundos para confirmar' })
     .setTimestamp();
 
@@ -463,8 +449,7 @@ async function ejecutarMinijuego(interaction, player, robo, inv) {
   const exitoEmbed = new EmbedBuilder()
     .setColor(0x00ff88)
     .setTitle(`✅ ATRACO EXITOSO — ${robo.emoji} ${robo.nombre}`)
-    .setDescription(`¡Escapaste con el botín! La policía no llegó a tiempo.${rehenes ? `\n👥 **${rehenes} ${rehenes === 1 ? 'rehén liberado' : 'rehenes liberados'}**` : ''}`)
-    .setThumbnail(robo.imagen)
+    .setDescription(`¡Robaste la tienda con Exito! Ahora toca esperar a que venga la policia para negociar.${rehenes ? `\n👥 **${rehenes} ${rehenes === 1 ? 'rehén liberado' : 'rehenes liberados'}**` : ''}`)
     .addFields(
       { name: '💊 Dinero sucio ganado', value: `**${formatMoney(botín)}**`, inline: true },
       { name: '🧹 Total dinero sucio', value: formatMoney(player.dineroSucio), inline: true },
@@ -509,7 +494,7 @@ async function ejecutarMinijuego(interaction, player, robo, inv) {
             ...(rehenes ? [{ name: '👥 Rehenes', value: `**${rehenes}** ${rehenes === 1 ? 'rehén' : 'rehenes'}`, inline: true }] : []),
             { name: '📊 Historial',     value: `Arrestos: ${player.arrestos} · Robos: ${player.robosRealizados}`, inline: false },
           )
-          .setFooter({ text: `AmericanRP  ·  Sistema de Robos  •  ${new Date().toLocaleTimeString('es-ES')}` })
+          .setFooter({ text: `American Island Rp  ·  Sistema de Robos  •  ${new Date().toLocaleTimeString('es-ES')}` })
           .setTimestamp();
 
         if (robo.imagen) alertEmbed.setThumbnail(robo.imagen);
@@ -654,7 +639,7 @@ async function enviarAlertaPolicia(message, robo, player, fallo) {
         (rehenesAlert ? `\n👥 **Rehenes:** ${rehenesAlert}` : '')
       )
       .setTimestamp()
-      .setFooter({ text: 'AmericanRP · Alerta de robos' });
+      .setFooter({ text: 'American Island Rp · Alerta de robos' });
 
     await ch.send({ content: '🚨 @here', embeds: [embed] }).catch(() => {});
   } catch {}
@@ -751,7 +736,7 @@ async function execute(interaction, client) {
   if (cmd === 'robos') {
     const embed = new EmbedBuilder()
       .setColor(config.colors.primary)
-      .setTitle('🏴‍☠️ Sistema de Robos — AmericanRP')
+      .setTitle('🏴‍☠️ Sistema de Robos — American Island Rp')
       .setThumbnail(ICONS.atracar)
       .setDescription('Lista de todos los robos disponibles y sus requisitos.')
       .addFields(
@@ -807,7 +792,7 @@ async function execute(interaction, client) {
         { name: '👤 Secuestrador', value: `<@${interaction.user.id}> — ${player.getFullName()}`, inline: true },
         { name: '🎯 Víctima', value: `<@${victima.id}> — ${targetPlayer.getFullName()}`, inline: true },
       )
-      .setFooter({ text: 'AmericanRP RP · Secuestro activo' })
+      .setFooter({ text: 'American Island Rp RP · Secuestro activo' })
       .setTimestamp();
 
     await interaction.reply({ embeds: [embed] });
