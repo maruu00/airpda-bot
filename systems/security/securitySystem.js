@@ -227,10 +227,12 @@ async function announceSanction(message, title, muted, reason) {
 
 async function handleAntiInsult(message, sec) {
   if (sec.antiInsultos === false) return false;
+  console.log(`[Security] handleAntiInsult check: content="${(message.content||'').slice(0,60)}" found=${checkBlacklist(message.content||'').found}`);
   const result = checkBlacklist(message.content || '');
   if (!result.found) return false;
+  console.log(`[Security] Blacklist hit: category=${result.category} word=${result.word}`);
 
-  const evidence = await captureEvidence(message, `Lenguaje inapropiado (${result.category})`).catch(() => null);
+  const evidence = await captureEvidence(message, `Lenguaje inapropiado (${result.category})`).catch((e) => { console.error('[Security] captureEvidence error:', e.message); return null; });
   await message.delete().catch(() => {});
 
   if (result.category === 'slur') {
@@ -335,6 +337,7 @@ async function handleMemberDuringRaid(member, sec) {
 // ─── Anti-Imagen Spam ────────────────────────────────────────────────────
 async function handleAntiImageSpam(message, sec) {
   if (sec.antiSpam === false) return false;
+  console.log(`[Security] handleAntiImageSpam: atts=${message.attachments?.size || 0} embeds=${message.embeds?.length || 0} contentLen=${(message.content||'').length}`);
   if (!message.attachments.size && !message.embeds.some(e => e.image || e.thumbnail)) return false;
 
   const userId = message.author.id;
@@ -352,10 +355,10 @@ async function handleAntiImageSpam(message, sec) {
   imageTracker.set(userId, entry);
 
   if (entry.count === 1) {
+    const ev = await captureEvidence(message, 'Múltiples imágenes (1er aviso)').catch(() => null);
     await deleteUserMessages(message.channel, userId);
     const warnEmbed = makeEmbed('📸 Imágenes múltiples', `<@${userId}> no envíes **más de 1 imagen** seguida. Próxima vez serás silenciado 5 min.`, 0xf59e0b);
     await message.channel.send({ embeds: [warnEmbed] }).then(m => setTimeout(() => m.delete().catch(() => {}), 8000)).catch(() => {});
-    const ev = await captureEvidence(message, 'Múltiples imágenes (1er aviso)').catch(() => null);
     await secLog(message.guild, warnEmbed, ev);
     return true;
   }

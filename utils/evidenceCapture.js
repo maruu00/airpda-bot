@@ -65,6 +65,7 @@ async function captureEvidence(message, reason = 'Infracción detectada') {
 
     // Líneas de texto del mensaje
     const rawContent   = message.content?.trim() ?? '';
+    console.log(`[Evidence] rawContent="${rawContent.slice(0,80)}" len=${rawContent.length} embeds=${message.embeds?.length || 0} atts=${message.attachments?.size || 0}`);
     const contentLines = rawContent ? wrapText(rawContent, W - TEXT_X - PAD, 14) : [];
 
     // Filas de embeds (título, descripción, url con invite)
