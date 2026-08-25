@@ -283,8 +283,16 @@ const prefixCommands = [
 /** [ADMIN] Ver el almacén de cualquier org por nombre: !almacen-NOMBRE */
 async function almAlmacenPorNombre(message, nombre) {
   if (!isStaff(message.member)) return message.reply('❌ Solo el staff puede ver el almacén de otras organizaciones.');
-  if (!nombre) return message.reply('Uso: `!almacen-NOMBRE_DE_LA_ORG`\nEj: `!almacen-Los Sauces`');
-  const gang = await Gang.findOne({ nombre: { $regex: _escapeRegex(nombre), $options: 'i' } });
+  if (!nombre) return message.reply('Uso: `!almacen-NOMBRE_DE_LA_ORG`\nEj: `!almacen-Los Sauces` o `!almacen-losblackcat`');
+  const norm = s => String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]/gi,'').toLowerCase();
+  const inputNorm = norm(nombre);
+  let gang = await Gang.findOne({ nombre: { $regex: _escapeRegex(nombre), $options: 'i' } });
+  if (!gang) {
+    // Fallback: buscar sin distinguir espacios/guiones/acentos (losblackcat → Los Black Cat)
+    const all = await Gang.find({}).lean();
+    gang = all.find(g => norm(g.nombre) === inputNorm || norm(g.nombre).includes(inputNorm) || inputNorm.includes(norm(g.nombre)));
+    if (gang) gang = await Gang.findById(gang._id);
+  }
   if (!gang) return message.reply(`❌ No existe la organización "${nombre}".`);
 
   const almacen = await getOrCreateAlmacen(gang._id);

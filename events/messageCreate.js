@@ -62,9 +62,11 @@ module.exports = {
 
     const cmd = client.prefixCmds.get(cmdName);
     if (!cmd) {
-      // Comandos dinámicos: !almacen-NOMBRE (staff)
+      // Comandos dinámicos: !almacen-NOMBRE (staff) — soporta con/sin espacios y guiones
       if (cmdName.startsWith('almacen-') && cmdName.length > 'almacen-'.length) {
-        const nombre = cmdName.slice('almacen-'.length).replace(/-/g, ' ');
+        let nombre = cmdName.slice('almacen-'.length).replace(/-/g, ' ');
+        // Si el comando fue "!almacen-Los Black Cat", el resto viene en args
+        if (args.length) nombre = (nombre + ' ' + args.join(' ')).trim();
         try {
           const orgModule = require('../commands/org');
           await orgModule.almAlmacenPorNombre(message, nombre, client);
