@@ -63,6 +63,37 @@ client.prefixCmds  = new Collection(); // prefix commands { name -> {name, alias
 // Check Canvas availability
 try { require('@napi-rs/canvas'); console.log('[Canvas] ✅ Disponible'); } catch { console.log('[Canvas] ❌ No disponible'); }
 
+// ─── Log de errores y reinicios → canal 1510107636157386853 ────────────────
+const { sendToLogChannel } = require('./utils/logChannel');
+process.on('uncaughtException', async (err) => {
+  console.error('[uncaughtException]', err);
+  try {
+    const { EmbedBuilder } = require('discord.js');
+    const embed = new EmbedBuilder().setColor(0xef4444).setTitle('💥 uncaughtException').setDescription(`\`\`\`js\n${String(err.stack || err).slice(0, 1900)}\n\`\`\``).setTimestamp();
+    await sendToLogChannel(client, { embeds: [embed] });
+  } catch {}
+});
+process.on('unhandledRejection', async (reason) => {
+  console.error('[unhandledRejection]', reason);
+  try {
+    const { EmbedBuilder } = require('discord.js');
+    const embed = new EmbedBuilder().setColor(0xf59e0b).setTitle('⚠️ unhandledRejection').setDescription(`\`\`\`js\n${String(reason).slice(0, 1900)}\n\`\`\``).setTimestamp();
+    await sendToLogChannel(client, { embeds: [embed] });
+  } catch {}
+});
+const _origError = console.error;
+console.error = (...args) => {
+  _origError(...args);
+  try {
+    const text = args.map(a => a instanceof Error ? (a.stack || a.message) : String(a)).join(' ').slice(0, 1900);
+    if (!text.trim()) return;
+    if (text.includes('[Canvas]') || text.includes('DeprecationWarning')) return;
+    const { EmbedBuilder } = require('discord.js');
+    const embed = new EmbedBuilder().setColor(0xef4444).setTitle('📋 Error en consola').setDescription(`\`\`\`js\n${text}\n\`\`\``).setTimestamp();
+    sendToLogChannel(client, { embeds: [embed] }).catch(() => {});
+  } catch {}
+};
+
 // ─── Command Queue — Consola Web ────────────────────────────────────────────
 const CommandQueue = require('./database/models/CommandQueue');
 

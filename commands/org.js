@@ -245,6 +245,39 @@ const prefixCommands = [
       return message.reply(`✅ Vehículo \`${vehicle.placa}\` (**${vehicle.modelo || 'Vehículo'}**) asignado a <@${target.id}> (${miembro.rango || 'Miembro'} de ${gang.nombre}).`);
     },
   },
+  {
+    name: 'comprar-org',
+    aliases: ['comprar-orga', 'buy-org', 'tienda-org'],
+    description: '!comprar-org [item] [cantidad] — Comprar para la org (gasta dinero de la org, va al almacén)',
+    async run(message, args) {
+      const player = await getPlayer(message.author.id, message.author.username);
+      const gang = player.gangId ? await Gang.findById(player.gangId) : null;
+      const err = await (async () => {
+        if (!player.personajeCreado) return '❌ Crea tu personaje primero.';
+        if (!gang) return '❌ No estás en ninguna organización.';
+        return null;
+      })();
+      if (err) return message.reply(err);
+      if (!args.length) return message.reply('Uso: `!comprar-org [item] [cantidad]`\nEj: `!comprar-org pistola 2` — mira `!tienda` para ver qué hay.');
+      const itemId = args[0];
+      const cantidad = Math.max(1, parseInt(args[1]) || 1);
+      const res = await comprarConDineroOrga(player, gang, itemId, cantidad, message.author.tag);
+      if (!res.ok) return message.reply(`❌ ${res.reason}`);
+      const embed = new EmbedBuilder()
+        .setColor(parseInt(String(gang.color || '#8b5cf6').replace('#', ''), 16) || 0x8b5cf6)
+        .setTitle(`🛒 Compra para [${gang.tag || ''}] ${gang.nombre}`)
+        .setDescription(`${res.item.emoji || '📦'} **${cantidad}x ${res.item.nombre}** comprado para la org.`)
+        .addFields(
+          { name: '💸 Coste', value: require('../utils/helpers').formatMoney(res.total), inline: true },
+          { name: '💰 Restante org', value: require('../utils/helpers').formatMoney(res.restante), inline: true },
+          { name: '📦 Almacén', value: `${(res.almacen.items || []).reduce((s,i)=>s+(i.cantidad||0),0)}/${res.almacen.capacidad || 150} items`, inline: true },
+          { name: '📦 Entregado en', value: `Almacén de la org — usa \`!sacar-org ${res.item.id} [cant]\` para sacarlo`, inline: false },
+        )
+        .setFooter({ text: `Comprado por ${message.author.tag}` })
+        .setTimestamp();
+      return message.reply({ embeds: [embed] });
+    },
+  },
 ];
 
 /** [ADMIN] Ver el almacén de cualquier org por nombre: !almacen-NOMBRE */
@@ -268,6 +301,25 @@ async function almAlmacenPorNombre(message, nombre) {
     .setFooter({ text: `Capacidad: ${ocupado}/${almacen.capacidad || 150} items · visto por ${message.author.username}` })
     .setTimestamp();
   return message.reply({ embeds: [embed] });
+}
+
+async function comprarConDineroOrga(player, gang, itemId, cantidad, actorTag) {
+  const { findItemGlobal } = require('./tienda');
+  const item = findItemGlobal(itemId);
+  if (!item) return { ok: false, reason: `Item "${itemId}" no encontrado en la tienda.` };
+  const total = item.precio * cantidad;
+  if ((gang.dinero || 0) < total) return { ok: false, reason: `La org no tiene suficiente dinero. Necesita ${require('../utils/helpers').formatMoney(total)} y tiene ${require('../utils/helpers').formatMoney(gang.dinero || 0)}.` };
+  const almacen = await getOrCreateAlmacen(gang._id);
+  const ocupado = (almacen.items || []).reduce((s, i) => s + (i.cantidad || 0), 0);
+  if (ocupado + cantidad > (almacen.capacidad || 150)) return { ok: false, reason: `Almacén lleno (${ocupado}/${almacen.capacidad || 150}).` };
+  gang.dinero -= total;
+  await gang.save();
+  const idx = almacen.items.findIndex(i => i.id === item.id);
+  if (idx !== -1) almacen.items[idx].cantidad += cantidad;
+  else almacen.items.push({ id: item.id, nombre: item.nombre, emoji: item.emoji, tipo: item.tipo, cantidad, precio: item.precio, descripcion: item.desc });
+  almacen.updatedAt = new Date();
+  await almacen.save();
+  return { ok: true, item, cantidad, total, restante: gang.dinero, almacen };
 }
 
 function _escapeRegex(s) {

@@ -1,4 +1,5 @@
-const { ActivityType } = require('discord.js');
+const { ActivityType, EmbedBuilder } = require('discord.js');
+const { sendToLogChannel } = require('../utils/logChannel');
 
 module.exports = {
   name: 'clientReady',
@@ -9,6 +10,21 @@ module.exports = {
     console.log(`👥 Usuarios: ${client.users.cache.size}`);
     console.log(`⚙️  Comandos slash: ${client.commands.size}`);
     console.log(`⚙️  Comandos prefix: ${client.prefixCmds.size}`);
+
+    // Alerta de reinicio en canal 1510107636157386853
+    try {
+      const embed = new EmbedBuilder()
+        .setColor(0x22c55e)
+        .setTitle('🟢 Bot reiniciado')
+        .setDescription(`**${client.user.tag}** se ha iniciado correctamente.\n< t:${Math.floor(Date.now()/1000)}:R>`)
+        .addFields(
+          { name: '📊 Servidores', value: `${client.guilds.cache.size}`, inline: true },
+          { name: '👥 Usuarios', value: `${client.users.cache.size}`, inline: true },
+          { name: '⚙️ Comandos', value: `${client.commands.size} slash / ${client.prefixCmds.size} prefix`, inline: true },
+        )
+        .setTimestamp();
+      await sendToLogChannel(client, { embeds: [embed] });
+    } catch {}
 
     // Actividad rotativa
     const activities = [

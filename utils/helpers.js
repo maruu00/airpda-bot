@@ -95,14 +95,14 @@ function calcXpNivel(nivel) {
 }
 
 // Aplicar decay de hambre/sed con el tiempo
-// Decay: hambre -0.05%/min (~33h para vaciar desde 100%), sed -0.06%/min (~28h)
+// Decay: hambre -0.02%/min (~83h para vaciar desde 100%), sed -0.025%/min (~66h) — ajustado para que no baje tan rápido
 function applyVitalDecay(player) {
   const ahora = Date.now();
   const ultimaActividad = player.ultimaActividad.getTime();
   const minPasados = Math.floor((ahora - ultimaActividad) / 60000);
   if (minPasados > 0) {
-    player.hambre = Math.max(0, player.hambre - minPasados * 0.05);
-    player.sed    = Math.max(0, player.sed    - minPasados * 0.06);
+    player.hambre = Math.max(0, player.hambre - minPasados * 0.02);
+    player.sed    = Math.max(0, player.sed    - minPasados * 0.025);
     player.ultimaActividad = new Date();
   }
   return player;

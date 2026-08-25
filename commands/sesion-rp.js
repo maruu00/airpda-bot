@@ -431,6 +431,17 @@ const prefixCommands = [
     );
     const total = warnDoc2.warns.filter(w => w.activo).length;
     await message.reply({ embeds: [new EmbedBuilder().setColor(0xf59e0b).setTitle('⚠️ WARN').setDescription(`<@${target.id}> advertido.\n**Razón:** ${razon}\n**Total warns:** ${total}`).setTimestamp()] });
+    try {
+      await target.send({ embeds: [new EmbedBuilder().setColor(0xf59e0b).setTitle('📢 Has sido sancionado — American Island RP').setDescription(
+        `Tras una evaluación, se ha decretado que has sido **sancionado**.\n\n` +
+        `**Motivo:** ${razon}\n` +
+        `**Staff a cargo:** ${message.author.tag} (\`${message.author.id}\`)\n` +
+        `**Fecha:** ${new Date().toLocaleString('es-ES')}\n` +
+        `**Advertencias activas:** ${total}\n\n` +
+        `Para cualquier duda, **abre un ticket** en el servidor.\n` +
+        `Para saber más sobre las normativas del servidor, visita: https://www.airpda.xyz/normativa`
+      ).setFooter({ text: 'American Island RP — Sistema de Sanciones' }).setTimestamp()] });
+    } catch {}
   }},
   { name: 'ban', description: '!ban @usuario [razon]', async run(message, args) {
     if (!message.member.permissions.has(PermissionFlagsBits.BanMembers)) return message.reply('Sin permisos.');

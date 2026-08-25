@@ -44,6 +44,12 @@ const data = [
     .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
     .addUserOption(o => o.setName('usuario').setDescription('Usuario').setRequired(true)),
 
+  // /quitar-warn — quitar un warn específico (1 de 3)
+  new SlashCommandBuilder().setName('quitar-warn').setDescription('Quitar una advertencia específica de un usuario')
+    .setDefaultMemberPermissions(PermissionFlagsBits.ModerateMembers)
+    .addUserOption(o => o.setName('usuario').setDescription('Usuario').setRequired(true))
+    .addIntegerOption(o => o.setName('indice').setDescription('Número del warn a quitar (1 = más antiguo)').setRequired(true).setMinValue(1)),
+
   // /mute
   new SlashCommandBuilder().setName('mute').setDescription('Silenciar a un usuario')
     .setDefaultMemberPermissions(PermissionFlagsBits.ModerateMembers)
@@ -203,7 +209,25 @@ async function execute(interaction, client) {
     await logMod(interaction.guild, gc, new EmbedBuilder().setColor(config.colors.warning).setTitle('⚠️ Warn')
       .addFields({ name: 'Usuario', value: target.tag, inline: true }, { name: 'Razón', value: razon }, { name: 'Total', value: `${total}`, inline: true }).setTimestamp());
 
-    try { await target.send(`⚠️ Recibiste una advertencia en **${interaction.guild.name}**.\nRazón: ${razon}\nAdvertencias totales: ${total}`); } catch {}
+    try {
+      await target.send({
+        embeds: [new EmbedBuilder()
+          .setColor(0xf59e0b)
+          .setTitle('📢 Has sido sancionado — American Island RP')
+          .setDescription(
+            `Tras una evaluación, se ha decretado que has sido **sancionado**.\n\n` +
+            `**Motivo:** ${razon}\n` +
+            `**Staff a cargo:** ${interaction.user.tag} (\`${interaction.user.id}\`)\n` +
+            `**Fecha:** ${new Date().toLocaleString('es-ES')}\n` +
+            `**Advertencias activas:** ${total}\n\n` +
+            `Para cualquier duda, **abre un ticket** en el servidor.\n` +
+            `Para saber más sobre las normativas del servidor, visita: https://www.airpda.xyz/normativa`
+          )
+          .setFooter({ text: 'American Island RP — Sistema de Sanciones' })
+          .setTimestamp()
+        ]
+      });
+    } catch {}
 
     // Auto-acciones por número de warns
     const member = interaction.guild.members.cache.get(target.id);
@@ -241,6 +265,21 @@ async function execute(interaction, client) {
     const target = interaction.options.getUser('usuario');
     await Warn.deleteOne({ guildId: interaction.guildId, userId: target.id });
     return interaction.reply({ embeds: [E.ok('Warns eliminados', `Todas las advertencias de ${target.tag} han sido eliminadas.`)] });
+  }
+
+  // ── QUITAR-WARN (quitar 1 de N) ───────────────────────────────────────────
+  if (cmd === 'quitar-warn') {
+    const target = interaction.options.getUser('usuario');
+    const indice = interaction.options.getInteger('indice');
+    const warnDoc = await Warn.findOne({ guildId: interaction.guildId, userId: target.id });
+    if (!warnDoc?.warns?.length) return interaction.reply({ embeds: [E.err('Sin warns', `${target.tag} no tiene advertencias.`)] });
+    if (indice < 1 || indice > warnDoc.warns.length) return interaction.reply({ embeds: [E.err('Índice inválido', `Ese usuario tiene ${warnDoc.warns.length} warns. Usa un número entre 1 y ${warnDoc.warns.length}.`)] });
+    const quitado = warnDoc.warns.splice(indice - 1, 1)[0];
+    await warnDoc.save();
+    const restantes = warnDoc.warns.length;
+    await interaction.reply({ embeds: [new EmbedBuilder().setColor(config.colors.success).setTitle('✅ Warn quitado').setDescription(`Se quitó el warn **#${indice}** de ${target.tag}.\n**Razón quitada:** ${quitado.razon}\n**Restantes:** ${restantes}`).setTimestamp()] });
+    await logMod(interaction.guild, gc, new EmbedBuilder().setColor(config.colors.success).setTitle('✅ Warn quitado').addFields({ name: 'Usuario', value: target.tag, inline: true }, { name: 'Quitado por', value: interaction.user.tag, inline: true }, { name: 'Razón quitada', value: quitado.razon }).setTimestamp());
+    return;
   }
 
   // ── MUTE ────────────────────────────────────────────────────────────────────
