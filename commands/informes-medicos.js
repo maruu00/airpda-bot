@@ -10,28 +10,26 @@ const E = require('../utils/embeds');
 const config = require('../config');
 
 const data = [
-  new SlashCommandBuilder()
-    .setName('informe-paciente')
-    .setDescription('Gestión de informes de pacientes — LSCFD / EMS')
-
-    .addSubcommand(s => s.setName('crear')
-      .setDescription('[BOMBEROS/EMS] Registrar informe de paciente en el dashboard')
-      .addStringOption(o => o.setName('paciente').setDescription('Nombre del paciente').setRequired(true).setMaxLength(100))
-      .addStringOption(o => o.setName('incidente').setDescription('Descripción del incidente').setRequired(true).setMaxLength(400))
-      .addStringOption(o => o.setName('tratamiento').setDescription('Tratamiento aplicado').setRequired(true).setMaxLength(300))
-      .addStringOption(o => o.setName('edad').setDescription('Edad aproximada del paciente').setRequired(false).setMaxLength(10))
-      .addStringOption(o => o.setName('estado').setDescription('Estado del paciente').setRequired(false)
-        .addChoices(
-          { name: '✅ Estable', value: 'estable' },
-          { name: '⚠️ Grave', value: 'grave' },
-          { name: '🔴 Crítico', value: 'critico' },
-          { name: '💀 Fallecido', value: 'fallecido' },
-          { name: '🏥 Hospitalizado', value: 'hospitalizado' },
-        ))
-      .addStringOption(o => o.setName('notas').setDescription('Notas adicionales').setRequired(false).setMaxLength(300)))
-
-    .addSubcommand(s => s.setName('lista')
-      .setDescription('Ver últimos informes de pacientes')),
+  // new SlashCommandBuilder()
+  //   .setName('informe-paciente')
+  //   .setDescription('Gestión de informes de pacientes — LSCFD / EMS')
+  //   .addSubcommand(s => s.setName('crear')
+  //     .setDescription('[BOMBEROS/EMS] Registrar informe de paciente en el dashboard')
+  //     .addStringOption(o => o.setName('paciente').setDescription('Nombre del paciente').setRequired(true).setMaxLength(100))
+  //     .addStringOption(o => o.setName('incidente').setDescription('Descripción del incidente').setRequired(true).setMaxLength(400))
+  //     .addStringOption(o => o.setName('tratamiento').setDescription('Tratamiento aplicado').setRequired(true).setMaxLength(300))
+  //     .addStringOption(o => o.setName('edad').setDescription('Edad aproximada del paciente').setRequired(false).setMaxLength(10))
+  //     .addStringOption(o => o.setName('estado').setDescription('Estado del paciente').setRequired(false)
+  //       .addChoices(
+  //         { name: '✅ Estable', value: 'estable' },
+  //         { name: '⚠️ Grave', value: 'grave' },
+  //         { name: '🔴 Crítico', value: 'critico' },
+  //         { name: '💀 Fallecido', value: 'fallecido' },
+  //         { name: '🏥 Hospitalizado', value: 'hospitalizado' },
+  //       ))
+  //     .addStringOption(o => o.setName('notas').setDescription('Notas adicionales').setRequired(false).setMaxLength(300)))
+  //   .addSubcommand(s => s.setName('lista')
+  //     .setDescription('Ver últimos informes de pacientes')),
 
   new SlashCommandBuilder()
     .setName('informe-personal')

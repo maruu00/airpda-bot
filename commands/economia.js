@@ -37,24 +37,25 @@ const data = [
     .setName('billetera')
     .setDescription('Ver tu dinero (cash, banco, sucio)'),
 
-  // /banco — Gestión de cuenta bancaria
-  new SlashCommandBuilder()
-    .setName('banco')
-    .setDescription('Gestión de tu cuenta bancaria')
-    .addSubcommand(s => s.setName('crear').setDescription('Crear cuenta corriente con PIN de seguridad'))
-    .addSubcommand(s => s.setName('estado').setDescription('Ver el estado de tus cuentas bancarias'))
-    .addSubcommand(s => s.setName('cambiar-pin').setDescription('Cambiar el PIN de tu cuenta'))
-    .addSubcommand(s => s.setName('ahorros-crear').setDescription('Abrir una segunda cuenta de ahorros'))
-    .addSubcommand(s => s
-      .setName('ahorros-depositar')
-      .setDescription('Mover dinero del banco a tu cuenta de ahorros')
-      .addIntegerOption(o => o.setName('cantidad').setDescription('Cantidad').setRequired(true).setMinValue(1))
-      .addStringOption(o => o.setName('pin').setDescription('PIN de cuenta corriente').setRequired(true).setMinLength(4).setMaxLength(4)))
-    .addSubcommand(s => s
-      .setName('ahorros-retirar')
-      .setDescription('Mover dinero de ahorros a tu cuenta corriente')
-      .addIntegerOption(o => o.setName('cantidad').setDescription('Cantidad').setRequired(true).setMinValue(1))
-      .addStringOption(o => o.setName('pin').setDescription('PIN de cuenta de ahorros').setRequired(true).setMinLength(4).setMaxLength(4))),
+  // // /banco — Gestión de cuenta bancaria
+  // new SlashCommandBuilder()
+  //   .setName('banco')
+  //   .setDescription('Gestión de tu cuenta bancaria')
+  //   .addSubcommand(s => s.setName('crear').setDescription('Crear cuenta corriente con PIN de seguridad'))
+  //   .addSubcommand(s => s.setName('estado').setDescription('Ver el estado de tus cuentas bancarias'))
+  //   .addSubcommand(s => s.setName('cambiar-pin').setDescription('Cambiar el PIN de tu cuenta'))
+  //   .addSubcommand(s => s.setName('ahorros-crear').setDescription('Abrir una segunda cuenta de ahorros'))
+  //   .addSubcommand(s => s
+  //     .setName('ahorros-depositar')
+  //     .setDescription('Mover dinero del banco a tu cuenta de ahorros')
+  //     .addIntegerOption(o => o.setName('cantidad').setDescription('Cantidad').setRequired(true).setMinValue(1))
+  //     .addStringOption(o => o.setName('pin').setDescription('PIN de cuenta corriente').setRequired(true).setMinLength(4).setMaxLength(4)))
+  //   .addSubcommand(s => s
+  //     .setName('ahorros-retirar')
+  //     .setDescription('Mover dinero de ahorros a tu cuenta corriente')
+  //     .addIntegerOption(o => o.setName('cantidad').setDescription('Cantidad').setRequired(true).setMinValue(1))
+  //     .addStringOption(o => o.setName('pin').setDescription('PIN de cuenta de ahorros').setRequired(true).setMinLength(4).setMaxLength(4))),
+  // ),
 
   // /depositar
   new SlashCommandBuilder()

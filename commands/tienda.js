@@ -268,9 +268,9 @@ const data = [
     .addStringOption(o => o.setName('item').setDescription('Nombre del item').setRequired(true).setMaxLength(64))
     .addIntegerOption(o => o.setName('cantidad').setDescription('Cantidad (def: 1)').setRequired(false).setMinValue(1)),
 
-  new SlashCommandBuilder()
-    .setName('vitales')
-    .setDescription('❤️ Ver tus estadísticas vitales (salud, hambre, sed)'),
+  // new SlashCommandBuilder()
+  //   .setName('vitales')
+  //   .setDescription('❤️ Ver tus estadísticas vitales (salud, hambre, sed)'),
 ];
 
 // ─── Execute ──────────────────────────────────────────────────────────────────

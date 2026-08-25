@@ -25,18 +25,19 @@ const data = [
     .setDescription('Arrastrar a un inconsciente')
     .addUserOption(o => o.setName('usuario').setDescription('Persona a arrastrar').setRequired(true)),
 
-  new SlashCommandBuilder()
-    .setName('coche')
-    .setDescription('Interactuar con partes del vehículo (puertas, capó, maletero, ventanillas)')
-    .addStringOption(o => o.setName('parte').setDescription('Parte del vehículo').setRequired(true)
-      .addChoices(
-        { name: '🚪 Puertas',      value: 'puertas' },
-        { name: '🔧 Capó',         value: 'capo' },
-        { name: '📦 Maletero',     value: 'maletero' },
-        { name: '🪟 Ventanillas',  value: 'ventanillas' },
-      ))
-    .addStringOption(o => o.setName('accion').setDescription('Acción').setRequired(false)
-      .addChoices({ name: 'Abrir', value: 'abrir' }, { name: 'Cerrar', value: 'cerrar' })),
+  // new SlashCommandBuilder()
+  //   .setName('coche')
+  //   .setDescription('Interactuar con partes del vehículo (puertas, capó, maletero, ventanillas)')
+  //   .addStringOption(o => o.setName('parte').setDescription('Parte del vehículo').setRequired(true)
+  //     .addChoices(
+  //       { name: '🚪 Puertas',      value: 'puertas' },
+  //       { name: '🔧 Capó',         value: 'capo' },
+  //       { name: '📦 Maletero',     value: 'maletero' },
+  //       { name: '🪟 Ventanillas',  value: 'ventanillas' },
+  //     ))
+  //   .addStringOption(o => o.setName('accion').setDescription('Acción').setRequired(false)
+  //     .addChoices({ name: 'Abrir', value: 'abrir' }, { name: 'Cerrar', value: 'cerrar' })),
+  // ],
 
   new SlashCommandBuilder()
     .setName('llamar')

@@ -143,8 +143,8 @@ const data = [
     .setName('quitar-sucio')
     .setDescription('[POLICÍA] Quitar dinero sucio a un ciudadano')
     .addUserOption(o => o.setName('usuario').setDescription('Ciudadano').setRequired(true))
-    .addIntegerOption(o => o.setName('cantidad').setDescription('Cantidad a quitar (0 = todo)').setRequired(false).setMinValue(0))
-    .addStringOption(o => o.setName('motivo').setDescription('Motivo del decomiso').setRequired(true).setMaxLength(300)),
+    .addStringOption(o => o.setName('motivo').setDescription('Motivo del decomiso').setRequired(true).setMaxLength(300))
+    .addIntegerOption(o => o.setName('cantidad').setDescription('Cantidad a quitar (0 = todo)').setRequired(false).setMinValue(0)),
 ];
 
 // ─── Execute handler ──────────────────────────────────────────────────────────
