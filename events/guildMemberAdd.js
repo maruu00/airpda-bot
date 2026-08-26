@@ -1,9 +1,26 @@
 const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
 const config = require('../config');
 const { checkRaid } = require('../systems/security/securitySystem');
+const Invite = require('../database/models/Invite');
 
 const WELCOME_CHANNEL_ID = '1441818963809144902';
 const WELCOME_API = 'https://backend-gamma-sepia-17.vercel.app/api/welcome/image';
+
+// Cache de invites por guild
+const inviteCache = new Map();
+async function cacheInvites(guild) {
+  try {
+    const invites = await guild.invites.fetch();
+    inviteCache.set(guild.id, new Map(invites.map(i => [i.code, i.uses])));
+  } catch {}
+}
+if (!global._inviteCacheInit) {
+  global._inviteCacheInit = true;
+  setTimeout(async () => {
+    const { client } = require('../index');
+    // client may not be ready yet, will be filled on ready
+  }, 5000);
+}
 
 module.exports = {
   name: 'guildMemberAdd',
@@ -26,7 +43,7 @@ module.exports = {
       .setDescription(
         `Nos alegra tenerte en **${member.guild.name}**.\n\n` +
         `> 📖 Lee las **reglas** del servidor para empezar\n` +
-        `> 📋 Crea tu **personaje** con \`/personaje crear\`\n` +
+        `> 📋 Crea tu **personaje** en la web https://airpda.xyz\n` +
         `> 🎭 Sumérgete en el **roleplay**\n\n` +
         `**¿Necesitas ayuda?** Abre un ticket con \`/ticket panel\``
       )
@@ -51,5 +68,27 @@ module.exports = {
     );
 
     await channel.send({ embeds: [embed], components: [row] }).catch(() => {});
+
+    // ─── Invite tracking ──────────────────────────────────────────────────
+    try {
+      const guild = member.guild;
+      const newInvites = await guild.invites.fetch().catch(() => null);
+      const cached = inviteCache.get(guild.id);
+      let inviterId = null;
+      if (newInvites && cached) {
+        for (const [code, inv] of newInvites) {
+          const prev = cached.get(code) || 0;
+          if (inv.uses > prev) { inviterId = inv.inviterId; break; }
+        }
+      }
+      if (inviterId) {
+        await Invite.findOneAndUpdate(
+          { guildId: guild.id, userId: inviterId },
+          { $push: { invited: member.id }, $inc: { invitedCount: 1 }, $setOnInsert: { left: [] } },
+          { upsert: true }
+        );
+      }
+      if (newInvites) inviteCache.set(guild.id, new Map(newInvites.map(i => [i.code, i.uses])));
+    } catch {}
   },
 };

@@ -202,13 +202,16 @@ async function handleStatusCore(interaction, client) {
   const member = interaction.member;
   const isStaff = member.permissions.has(PermissionFlagsBits.Administrator) || member.roles.cache.has(STAFF_IDS[0]);
   if (!isStaff) {
-    return interaction.reply({ content: '❌ No tienes permisos para usar estos controles.', flags: 64 });
+    try { return await interaction.reply({ content: '❌ No tienes permisos para usar estos controles.', flags: 64 }); } catch { return; }
   }
+
+  // Deferir inmediatamente para evitar Unknown interaction (3s)
+  try { await interaction.deferReply({ flags: 64 }); } catch {}
 
   statusLock = statusLock.then(async () => {
     let status = await getOrCreateStatus();
     if (!status.isOnline && action !== 'sv_cerrar') {
-      return interaction.reply({ content: '❌ El servidor está cerrado. Usa "Abrir Server" para activarlo.', flags: 64 });
+      try { return await interaction.editReply({ content: '❌ El servidor está cerrado. Usa "Abrir Server" para activarlo.' }); } catch { return; }
     }
 
     const field = target === 'miembros' ? 'jugadores'
@@ -252,15 +255,16 @@ async function handleStatusCore(interaction, client) {
     await status.save();
     await updateStatusEmbed(status, client);
     if (status.logs.length > 0) sendLogToChannel(client, status.logs[status.logs.length - 1]);
-    await interaction.reply({ content: `✅ **${target.toUpperCase()}** actualizado: \`${status[field]}\``, flags: 64 });
+    try { await interaction.editReply({ content: `✅ **${target.toUpperCase()}** actualizado: \`${status[field]}\`` }); } catch {}
   });
   return statusLock;
 }
 
 async function handleCerrar(interaction, client) {
+  try { await interaction.deferReply({ flags: 64 }); } catch {}
   const member = interaction.member;
   const isStaff = member.permissions.has(PermissionFlagsBits.Administrator) || member.roles.cache.has(STAFF_IDS[0]);
-  if (!isStaff) return interaction.reply({ content: '❌ Sin permisos.', flags: 64 });
+  if (!isStaff) { try { return await interaction.editReply({ content: '❌ Sin permisos.' }); } catch { return; } }
 
   let status = await getOrCreateStatus();
   status.isOnline = !status.isOnline;
@@ -290,15 +294,19 @@ async function handleCerrar(interaction, client) {
   await status.save();
   await updateStatusEmbed(status, client);
   sendLogToChannel(client, status.logs[status.logs.length - 1]);
-  await interaction.reply({ content: `✅ Server ${status.isOnline ? 'abierto' : 'cerrado'}`, flags: 64 });
+  try { await interaction.editReply({ content: `✅ Server ${status.isOnline ? 'abierto' : 'cerrado'}` }); } catch {}
 }
 
 async function handlePico(interaction) {
+  try { await interaction.deferReply({ flags: 64 }); } catch {}
   const status = await getOrCreateStatus();
-  return interaction.reply({
-    content: `📊 **Pico máximo:** ${status.picoMaximo || 0} jugadores${status.picoFecha ? ` (${status.picoFecha.toLocaleDateString('es-ES')})` : ''}`,
-    flags: 64,
-  });
+  try {
+    return await interaction.editReply({
+      content: `📊 **Pico máximo:** ${status.picoMaximo || 0} jugadores${status.picoFecha ? ` (${status.picoFecha.toLocaleDateString('es-ES')})` : ''}`,
+    });
+  } catch {
+    try { return await interaction.reply({ content: `📊 **Pico máximo:** ${status.picoMaximo || 0} jugadores`, flags: 64 }); } catch { return; }
+  }
 }
 
 module.exports = {

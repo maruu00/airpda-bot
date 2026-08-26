@@ -419,7 +419,7 @@ const prefixCommands = [
     try { await target.send({ embeds: [new EmbedBuilder().setColor(0xf59e0b).setTitle('⚠️ AVISO').setDescription(`**Razón:** ${razon}`).setTimestamp()] }); } catch {}
     await message.reply(`✅ Aviso enviado a ${target.tag}.`);
   }},
-  { name: 'warn', description: '!warn @usuario [razon]', async run(message, args) {
+  { name: 'warn', aliases: ['w'], description: '!warn / !w @usuario [razon]', async run(message, args) {
     if (!message.member.permissions.has(PermissionFlagsBits.ModerateMembers)) return message.reply('Sin permisos.');
     const target = message.mentions.users.first();
     const razon  = args.slice(1).join(' ') || 'Sin razón';

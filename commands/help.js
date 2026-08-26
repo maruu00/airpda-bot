@@ -303,6 +303,18 @@ const CATEGORIAS = [
     ],
   },
   {
+    id: 'invites',
+    emoji: '📨',
+    label: 'Invitaciones',
+    descripcion: 'Sistema de invitaciones y rankings',
+    color: 0x3b82f6,
+    comandos: [
+      { cmd: '/invites [@u]',     desc: 'Ver invites de un usuario (invitados, se fueron, válidos)' },
+      { cmd: '/top-invites',      desc: 'Top 10 con más invites válidos' },
+      { cmd: '/top-dinero',       desc: 'Top 10 con más dinero (cash+banco)' },
+    ],
+  },
+  {
     id: 'admin',
     emoji: '🛠️',
     label: 'Administración',
@@ -337,9 +349,9 @@ const CATEGORIAS = [
       { cmd: '/status-panel',             desc: 'Panel de estado detallado' },
       { cmd: '/consola [msg] [nivel]',    desc: '[ADMIN] Enviar a consola y canal de logs' },
       { cmd: '/consola-eval [codigo]',    desc: '[ADMIN] Ejecutar JS en consola (owner)' },
-      { cmd: '/help [categoria]',         desc: 'Mostrar este centro de ayuda' },
       { cmd: '!ver [@u]',                 desc: '(Admin) Ficha completa: economía, inventario, vehículos y estado' },
       { cmd: '!consola [nivel] [msg]',    desc: '[ADMIN] Enviar a consola' },
+      { cmd: '!w [@u] [razón]',           desc: 'Alias de !warn' },
     ],
   },
 ];

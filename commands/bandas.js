@@ -2,7 +2,7 @@
  * BANDAS — Sistema de bandas/gangs completo
  * Slash: /banda crear | /banda invitar | /banda expulsar | /banda info | /banda territorio | /banda banco | /banda promover | /banda salir | /banda disolver
  */
-const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } = require('discord.js');
 const { getPlayer, formatMoney, rand } = require('../utils/helpers');
 const E = require('../utils/embeds');
 const config = require('../config');
@@ -253,7 +253,7 @@ async function execute(interaction, client) {
     }
 
     if (accion === 'retirar') {
-      if (!gang.isLider(interaction.user.id)) return interaction.reply({ embeds: [E.err('Sin permisos', 'Solo el líder puede retirar del banco.')], ephemeral: true });
+      if (!interaction.member.permissions.has(PermissionFlagsBits.Administrator) && !interaction.member.roles.cache.has('1441818963133731016')) return interaction.reply({ embeds: [E.err('Sin permisos', 'Solo el staff (Admin) puede retirar del banco de la banda.')], ephemeral: true });
       if ((gang.dinero || 0) < cantidad) return interaction.reply({ embeds: [E.err('Fondos insuficientes', 'El banco de la banda no tiene suficiente.')], ephemeral: true });
       gang.dinero -= cantidad;
       player.cash += cantidad;
