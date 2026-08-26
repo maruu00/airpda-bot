@@ -70,4 +70,49 @@ async function execute(interaction) {
   }
 }
 
-module.exports = { data, execute };
+const prefixCommands = [
+  {
+    name: 'invites',
+    aliases: ['invitaciones', 'inv'],
+    description: '!invites [@usuario] — Ver invites',
+    async run(message, args) {
+      const target = message.mentions.users.first() || message.author;
+      const doc = await Invite.findOne({ guildId: message.guild.id, userId: target.id }).lean();
+      const invited = doc?.invited?.length || 0;
+      const left = doc?.left?.length || 0;
+      const valid = invited - left;
+      const embed = new (require('discord.js').EmbedBuilder)().setColor(0x3b82f6).setTitle(`📨 Invites de ${target.tag}`).setThumbnail(target.displayAvatarURL({ dynamic: true }))
+        .addFields({ name: '✅ Invitados', value: `${invited}`, inline: true }, { name: '❌ Se fueron', value: `${left}`, inline: true }, { name: '📊 Válidos', value: `${Math.max(0,valid)}`, inline: true }).setTimestamp();
+      return message.reply({ embeds: [embed] });
+    }
+  },
+  {
+    name: 'top-invites',
+    aliases: ['topinvites'],
+    description: '!top-invites — Top invites',
+    async run(message) {
+      const top = await Invite.find({ guildId: message.guild.id }).sort({ invitedCount: -1 }).limit(10).lean().catch(()=>[]);
+      let sorted=top;
+      if(!top.length || top[0].invitedCount===undefined){ const all=await Invite.find({ guildId: message.guild.id }).lean(); sorted=all.sort((a,b)=>(b.invited?.length||0)-(a.invited?.length||0)).slice(0,10); }
+      if(!sorted.length) return message.reply({ embeds: [new (require('discord.js').EmbedBuilder)().setColor(0x64748b).setTitle('Top Invites').setDescription('Sin datos.')] });
+      const desc=(await Promise.all(sorted.map(async (doc,i)=>{ try{ const u=await message.client.users.fetch(doc.userId).catch(()=>null); const tag=u?u.tag:doc.userId; const valid=(doc.invited?.length||0)-(doc.left?.length||0); return `**${i+1}.** ${tag} — **${Math.max(0,valid)}** válidos`; }catch{ return `**${i+1}.** ${doc.userId}`; } }))).join('\n');
+      return message.reply({ embeds: [new (require('discord.js').EmbedBuilder)().setColor(0xf59e0b).setTitle('🏆 Top Invites').setDescription(desc)] });
+    }
+  },
+  {
+    name: 'top-dinero',
+    aliases: ['topdinero', 'topmoney'],
+    description: '!top-dinero — Top dinero',
+    async run(message) {
+      const Player=require('../database/models/Player');
+      const { formatMoney }=require('../utils/helpers');
+      const top=await Player.find({personajeCreado:true}).sort({cash:-1}).limit(10).lean().catch(()=>[]);
+      const sorted=top.sort((a,b)=>(b.cash+b.bank)-(a.cash+a.bank)).slice(0,10);
+      if(!sorted.length) return message.reply({ embeds: [new (require('discord.js').EmbedBuilder)().setColor(0x64748b).setTitle('Top Dinero').setDescription('Sin datos.')] });
+      const desc=sorted.map((p,i)=>`**${i+1}.** ${p.nombre?`${p.nombre} ${p.apellido}`:p.discordUsername||p.discordId} — ${formatMoney((p.cash||0)+(p.bank||0))}`).join('\n');
+      return message.reply({ embeds: [new (require('discord.js').EmbedBuilder)().setColor(0x22c55e).setTitle('💰 Top Dinero').setDescription(desc)] });
+    }
+  },
+];
+
+module.exports = { data, execute, prefixCommands };

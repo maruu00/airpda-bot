@@ -434,4 +434,34 @@ async function execute(interaction, client) {
   }
 }
 
-module.exports = { data, execute };
+const prefixCommands = [
+  {
+    name: 'quitar-warn',
+    aliases: ['unwarn', 'removewarn', 'qw'],
+    description: '!quitar-warn @usuario <indice> — Quitar un warn (ej: !quitar-warn @user 2)',
+    async run(message, args) {
+      if (!message.member.permissions.has(PermissionFlagsBits.ModerateMembers)) return message.reply('❌ Sin permisos.');
+      const target = message.mentions.users.first();
+      const indice = parseInt(args[1]);
+      if (!target || isNaN(indice)) return message.reply('Uso: `!quitar-warn @usuario <indice>` (1 = más antiguo). Mira `!warns @usuario` para ver la lista.');
+      const warnDoc = await Warn.findOne({ guildId: message.guild.id, userId: target.id });
+      if (!warnDoc?.warns?.length) return message.reply(`❌ ${target.tag} no tiene warns.`);
+      if (indice < 1 || indice > warnDoc.warns.length) return message.reply(`❌ Índice inválido. Tiene ${warnDoc.warns.length} warns (1-${warnDoc.warns.length}).`);
+      const quitado = warnDoc.warns.splice(indice - 1, 1)[0];
+      await warnDoc.save();
+      await message.reply({ embeds: [new EmbedBuilder().setColor(0x22c55e).setTitle('✅ Warn quitado').setDescription(`Se quitó el warn **#${indice}** de ${target.tag}.\n**Razón:** ${quitado.razon}\n**Restantes:** ${warnDoc.warns.length}`)] });
+    }
+  },
+  {
+    name: 'w',
+    aliases: [],
+    description: '!w @usuario [razon] — Alias de !warn',
+    async run(message, args) {
+      const cmd = require('./sesion-rp').prefixCommands.find(c => c.name === 'warn');
+      if (cmd) return cmd.run(message, args);
+      return message.reply('Usa `!warn @usuario [razón]`');
+    }
+  },
+];
+
+module.exports = { data, execute, prefixCommands };
