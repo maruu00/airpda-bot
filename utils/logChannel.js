@@ -1,6 +1,6 @@
 'use strict';
 
-const ALERT_CHANNEL_ID = '1510107636157386853';
+const ALERT_CHANNEL_ID = '1480878156213780591';
 
 async function sendToLogChannel(client, embedOrContent) {
   try {

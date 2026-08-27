@@ -3,7 +3,7 @@ const config = require('../config');
 const ServerStatus = require('../database/models/ServerStatus');
 
 const STATUS_CHANNEL_ID = process.env.STATUS_CHANNEL_ID;
-const STATUS_LOG_CHANNEL_ID = '1480878156213780591';
+const STATUS_LOG_CHANNEL_ID = '1510107636157386853';
 const STATUS_IMG_URL = 'https://www.airpda.xyz';
 const TICKET_CHANNEL_MENTION = '<#1441818964505399307>';
 const MAX_JUGADORES = 30;

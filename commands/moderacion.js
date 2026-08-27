@@ -279,6 +279,10 @@ async function execute(interaction, client) {
     const restantes = warnDoc.warns.length;
     await interaction.reply({ embeds: [new EmbedBuilder().setColor(config.colors.success).setTitle('✅ Warn quitado').setDescription(`Se quitó el warn **#${indice}** de ${target.tag}.\n**Razón quitada:** ${quitado.razon}\n**Restantes:** ${restantes}`).setTimestamp()] });
     await logMod(interaction.guild, gc, new EmbedBuilder().setColor(config.colors.success).setTitle('✅ Warn quitado').addFields({ name: 'Usuario', value: target.tag, inline: true }, { name: 'Quitado por', value: interaction.user.tag, inline: true }, { name: 'Razón quitada', value: quitado.razon }).setTimestamp());
+    try {
+      const ch = await interaction.guild.channels.fetch('1510107636157386853').catch(() => null);
+      if (ch) await ch.send({ embeds: [new EmbedBuilder().setColor(0x22c55e).setTitle('✅ Warn quitado').setDescription(`**Usuario:** ${target.tag} (${target.id})\n**Quitado por:** ${interaction.user.tag}\n**Razón quitada:** ${quitado.razon}\n**Restantes:** ${restantes}`).setTimestamp()] }).catch(() => {});
+    } catch {}
     return;
   }
 
