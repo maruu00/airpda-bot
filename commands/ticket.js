@@ -6,20 +6,21 @@ const {
   ticketClose, ticketTranscript, sendTicketPanel, fixExistingTicketsPermissions, TICKET_VIEWER_ROLE_ID,
 } = require('../systems/tickets/ticketSystem');
 
-const data = new SlashCommandBuilder()
-  .setName('ticket')
-  .setDescription('Sistema de tickets')
-  .addSubcommand(s => s.setName('panel').setDescription('Enviar panel de tickets al canal actual'))
-  .addSubcommand(s => s.setName('add').setDescription('Añadir usuario al ticket')
-    .addUserOption(o => o.setName('usuario').setDescription('Usuario a añadir').setRequired(true)))
-  .addSubcommand(s => s.setName('remove').setDescription('Quitar usuario del ticket')
-    .addUserOption(o => o.setName('usuario').setDescription('Usuario a quitar').setRequired(true)))
-  .addSubcommand(s => s.setName('rename').setDescription('Renombrar el ticket')
-    .addStringOption(o => o.setName('nombre').setDescription('Nuevo nombre').setRequired(true).setMaxLength(90)))
-  .addSubcommand(s => s.setName('close').setDescription('Cerrar el ticket actual')
-    .addStringOption(o => o.setName('motivo').setDescription('Motivo del cierre').setRequired(false).setMaxLength(300)))
-  .addSubcommand(s => s.setName('transcript').setDescription('Generar transcripción del ticket actual'))
-  .addSubcommand(s => s.setName('sync').setDescription(`Sincroniza permisos de tickets abiertos para el rol <@&${TICKET_VIEWER_ROLE_ID}>`));
+const data = null; // Desactivado temporalmente para liberar slots (ticket panel, add, remove, etc. siguen por prefix si se necesitan)
+// new SlashCommandBuilder()
+//   .setName('ticket')
+//   .setDescription('Sistema de tickets')
+//   .addSubcommand(s => s.setName('panel').setDescription('Enviar panel de tickets al canal actual'))
+//   .addSubcommand(s => s.setName('add').setDescription('Añadir usuario al ticket')
+//     .addUserOption(o => o.setName('usuario').setDescription('Usuario a añadir').setRequired(true)))
+//   .addSubcommand(s => s.setName('remove').setDescription('Quitar usuario del ticket')
+//     .addUserOption(o => o.setName('usuario').setDescription('Usuario a quitar').setRequired(true)))
+//   .addSubcommand(s => s.setName('rename').setDescription('Renombrar el ticket')
+//     .addStringOption(o => o.setName('nombre').setDescription('Nuevo nombre').setRequired(true).setMaxLength(90)))
+//   .addSubcommand(s => s.setName('close').setDescription('Cerrar el ticket actual')
+//     .addStringOption(o => o.setName('motivo').setDescription('Motivo del cierre').setRequired(false).setMaxLength(300)))
+//   .addSubcommand(s => s.setName('transcript').setDescription('Generar transcripción del ticket actual'))
+//   .addSubcommand(s => s.setName('sync').setDescription(`Sincroniza permisos de tickets abiertos para el rol <@&${TICKET_VIEWER_ROLE_ID}>`));
 
 async function execute(interaction, client) {
   const sub = interaction.options.getSubcommand();

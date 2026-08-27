@@ -29,6 +29,10 @@ const rest = new REST({ version: '10' }).setToken(config.token);
 
 (async () => {
   try {
+    if (commands.length > 100) {
+      console.warn(`⚠️ Hay ${commands.length} comandos, Discord solo permite 100. Se registrarán los primeros 100.`);
+      commands.splice(100);
+    }
     console.log(`\n🔄 Registrando ${commands.length} slash commands...`);
 
     // Guild commands (instantáneo, solo en tu servidor)

@@ -327,10 +327,10 @@ module.exports = {
       .setName('status-off')
       .setDescription('Cerrar estado del servidor (todo a 0)')
       .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
-    new SlashCommandBuilder()
-      .setName('status-panel')
-      .setDescription('Abrir panel de control del status (solo staff)')
-      .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
+    // new SlashCommandBuilder()
+    //   .setName('status-panel')
+    //   .setDescription('Abrir panel de control del status (solo staff)')
+    //   .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
   ],
 
   async execute(interaction, client) {

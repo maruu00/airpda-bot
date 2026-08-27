@@ -1,5 +1,6 @@
 const { ActivityType, EmbedBuilder } = require('discord.js');
 const { sendToLogChannel } = require('../utils/logChannel');
+const { iniciarBancoEstado } = require('../systems/bancoEstado');
 
 module.exports = {
   name: 'clientReady',
@@ -45,6 +46,7 @@ module.exports = {
 
     setActivity();
     setInterval(setActivity, 30_000);
+    try { iniciarBancoEstado(client); } catch {}
 
     console.log('\n✅ AmericanRP Bot listo!\n');
   },
