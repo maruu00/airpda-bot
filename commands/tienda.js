@@ -285,7 +285,7 @@ async function execute(interaction, client) {
     const msg = await interaction.reply({
       embeds: [catEmbed(catInicial)],
       components: [buildSelectMenu(catInicial)],
-      fetchReply: true,
+      withResponse: true,
     });
 
     const collector = msg.createMessageComponentCollector({

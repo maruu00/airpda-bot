@@ -39,24 +39,37 @@ const data = new SlashCommandBuilder()
   .addSubcommand(s => s.setName('guerra').setDescription('Declarar la guerra a otra banda')
     .addStringOption(o => o.setName('banda').setDescription('Nombre de la banda enemiga').setRequired(true)));
 
+async function safeReply(interaction, payload) {
+  try {
+    if (interaction.deferred || interaction.replied) return await interaction.editReply(payload);
+    return await interaction.reply({ ...payload, ephemeral: true });
+  } catch { try { return await interaction.followUp({ ...payload, ephemeral: true }); } catch {} }
+}
 async function execute(interaction, client) {
   const sub = interaction.options.getSubcommand();
+  // Deferir para evitar Unknown interaction (3s)
+  const needsDefer = sub !== 'lista';
+  if (needsDefer && !interaction.deferred && !interaction.replied) {
+    try { await interaction.deferReply({ ephemeral: true }); } catch {}
+  }
   const player = await getPlayer(interaction.user.id, interaction.user.username);
 
   if (!player.personajeCreado && sub !== 'lista') {
-    return interaction.reply({ embeds: [E.warn('Sin personaje', 'Crea tu personaje primero con `/personaje crear`.')], ephemeral: true });
+    try { return await interaction.editReply({ embeds: [E.warn('Sin personaje', 'Crea tu personaje primero con `/personaje crear`.')] }); } catch { return safeReply(interaction, { embeds: [E.warn('Sin personaje', 'Crea tu personaje primero con `/personaje crear`.')], ephemeral: true }).catch(() => {}); }
   }
 
   // ── CREAR ──────────────────────────────────────────────────────────────────
   if (sub === 'crear') {
-    if (player.gangId) return interaction.reply({ embeds: [E.err('Ya en banda', 'Sal de tu banda actual antes de crear una nueva.')], ephemeral: true });
+    if (player.gangId) {
+      try { return await interaction.editReply({ embeds: [E.err('Ya en banda', 'Sal de tu banda actual antes de crear una nueva.')] }); } catch { return safeReply(interaction, { embeds: [E.err('Ya en banda', 'Sal de tu banda actual antes de crear una nueva.')], ephemeral: true }).catch(()=>{}); }
+    }
 
     const nombre = interaction.options.getString('nombre');
     const tag = interaction.options.getString('tag').toUpperCase();
     const color = interaction.options.getString('color') || '#8b5cf6';
 
     const existing = await Gang.findOne({ $or: [{ nombre: { $regex: `^${nombre}$`, $options: 'i' } }, { tag }] });
-    if (existing) return interaction.reply({ embeds: [E.err('Nombre/tag ocupado', 'Ya existe una banda con ese nombre o tag.')], ephemeral: true });
+    if (existing) { try { return await interaction.editReply({ embeds: [E.err('Nombre/tag ocupado', 'Ya existe una banda con ese nombre o tag.')] }); } catch { return safeReply(interaction, { embeds: [E.err('Nombre/tag ocupado', 'Ya existe una banda con ese nombre o tag.')], ephemeral: true }).catch(()=>{}); } }
 
     const gang = await Gang.create({
       nombre,
@@ -95,7 +108,7 @@ async function execute(interaction, client) {
     player.gangRango = 'Líder';
     await player.save();
 
-    return interaction.reply({
+    return safeReply(interaction, {
       embeds: [new EmbedBuilder()
         .setColor(parseInt(color.replace('#', ''), 16) || config.colors.gang)
         .setTitle(`👥 Banda [${tag}] creada`)
@@ -112,17 +125,17 @@ async function execute(interaction, client) {
   // ── INVITAR ────────────────────────────────────────────────────────────────
   if (sub === 'invitar') {
     const gang = await Gang.findById(player.gangId);
-    if (!gang) return interaction.reply({ embeds: [E.err('Sin banda', 'No perteneces a ninguna banda.')], ephemeral: true });
+    if (!gang) return safeReply(interaction, { embeds: [E.err('Sin banda', 'No perteneces a ninguna banda.')], ephemeral: true });
     if (!gang.isLider(interaction.user.id) && gang.getMiembro(interaction.user.id)?.rango !== 'Capitán') {
-      return interaction.reply({ embeds: [E.err('Sin permisos', 'Solo el líder o capitanes pueden invitar.')], ephemeral: true });
+      return safeReply(interaction, { embeds: [E.err('Sin permisos', 'Solo el líder o capitanes pueden invitar.')], ephemeral: true });
     }
 
     const target = interaction.options.getUser('usuario');
     const targetPlayer = await getPlayer(target.id, target.username);
-    if (!targetPlayer.personajeCreado) return interaction.reply({ embeds: [E.err('Sin personaje', 'Ese usuario no tiene personaje.')], ephemeral: true });
-    if (targetPlayer.gangId) return interaction.reply({ embeds: [E.err('Ya en banda', 'Ese jugador ya pertenece a una banda.')], ephemeral: true });
+    if (!targetPlayer.personajeCreado) return safeReply(interaction, { embeds: [E.err('Sin personaje', 'Ese usuario no tiene personaje.')], ephemeral: true });
+    if (targetPlayer.gangId) return safeReply(interaction, { embeds: [E.err('Ya en banda', 'Ese jugador ya pertenece a una banda.')], ephemeral: true });
 
-    if (gang.miembros.length >= (gang.slots || 4)) return interaction.reply({ embeds: [E.err('Banda llena', `La banda tiene el máximo de ${gang.slots || 4} miembros. Pide al staff más slots.`)], ephemeral: true });
+    if (gang.miembros.length >= (gang.slots || 4)) return safeReply(interaction, { embeds: [E.err('Banda llena', `La banda tiene el máximo de ${gang.slots || 4} miembros. Pide al staff más slots.`)], ephemeral: true });
 
     // Añadir directamente (confirmación por DM)
     try {
@@ -147,18 +160,18 @@ async function execute(interaction, client) {
       } catch {}
     }
 
-    return interaction.reply({ embeds: [E.ok('Miembro añadido', `**${targetPlayer.getFullName()}** se ha unido a **${gang.nombre}** como Recluta.`)] });
+    return safeReply(interaction, { embeds: [E.ok('Miembro añadido', `**${targetPlayer.getFullName()}** se ha unido a **${gang.nombre}** como Recluta.`)] });
   }
 
   // ── EXPULSAR ───────────────────────────────────────────────────────────────
   if (sub === 'expulsar') {
     const gang = await Gang.findById(player.gangId);
-    if (!gang) return interaction.reply({ embeds: [E.err('Sin banda', 'No perteneces a una banda.')], ephemeral: true });
-    if (!gang.isLider(interaction.user.id)) return interaction.reply({ embeds: [E.err('Sin permisos', 'Solo el líder puede expulsar.')], ephemeral: true });
+    if (!gang) return safeReply(interaction, { embeds: [E.err('Sin banda', 'No perteneces a una banda.')], ephemeral: true });
+    if (!gang.isLider(interaction.user.id)) return safeReply(interaction, { embeds: [E.err('Sin permisos', 'Solo el líder puede expulsar.')], ephemeral: true });
 
     const target = interaction.options.getUser('usuario');
-    if (target.id === interaction.user.id) return interaction.reply({ embeds: [E.err('Error', 'No puedes expulsarte a ti mismo. Usa /banda salir.')], ephemeral: true });
-    if (!gang.isMiembro(target.id)) return interaction.reply({ embeds: [E.err('No es miembro', 'Ese usuario no está en tu banda.')], ephemeral: true });
+    if (target.id === interaction.user.id) return safeReply(interaction, { embeds: [E.err('Error', 'No puedes expulsarte a ti mismo. Usa /banda salir.')], ephemeral: true });
+    if (!gang.isMiembro(target.id)) return safeReply(interaction, { embeds: [E.err('No es miembro', 'Ese usuario no está en tu banda.')], ephemeral: true });
 
     gang.miembros = gang.miembros.filter(m => m.discordId !== target.id);
     const targetPlayer = await getPlayer(target.id, target.username);
@@ -179,7 +192,7 @@ async function execute(interaction, client) {
       await u.send(`👢 Has sido expulsado de la banda **${gang.nombre}**.`);
     } catch {}
 
-    return interaction.reply({ embeds: [E.ok('Miembro expulsado', `**${targetPlayer.personajeCreado ? targetPlayer.getFullName() : target.username}** ha sido expulsado de la banda.`)] });
+    return safeReply(interaction, { embeds: [E.ok('Miembro expulsado', `**${targetPlayer.personajeCreado ? targetPlayer.getFullName() : target.username}** ha sido expulsado de la banda.`)] });
   }
 
   // ── INFO ───────────────────────────────────────────────────────────────────
@@ -191,7 +204,7 @@ async function execute(interaction, client) {
     } else {
       gang = await Gang.findById(player.gangId);
     }
-    if (!gang) return interaction.reply({ embeds: [E.err('Banda no encontrada', nombreBuscar ? `No existe la banda "${nombreBuscar}".` : 'No perteneces a ninguna banda.')], ephemeral: true });
+    if (!gang) return safeReply(interaction, { embeds: [E.err('Banda no encontrada', nombreBuscar ? `No existe la banda "${nombreBuscar}".` : 'No perteneces a ninguna banda.')], ephemeral: true });
 
     const rangos = (gang.rangos && gang.rangos.length && gang.rangos.length <= 5) ? gang.rangos : GANG_RANGOS;
     const miembrosFormatted = gang.miembros
@@ -216,17 +229,17 @@ async function execute(interaction, client) {
 
     if (gang.descripcion) embed.setDescription(gang.descripcion);
 
-    return interaction.reply({ embeds: [embed] });
+    return safeReply(interaction, { embeds: [embed] });
   }
 
   // ── LISTA ──────────────────────────────────────────────────────────────────
   if (sub === 'lista') {
     const gangs = await Gang.find().sort({ 'miembros.length': -1 }).limit(10);
-    if (!gangs.length) return interaction.reply({ embeds: [E.info('Sin bandas', 'No hay bandas registradas aún.')] });
+    if (!gangs.length) return safeReply(interaction, { embeds: [E.info('Sin bandas', 'No hay bandas registradas aún.')] });
 
     const desc = gangs.map((g, i) => `**${i + 1}.** [${g.tag}] **${g.nombre}** — ${g.miembros.length} miembros | Banco: ${formatMoney(g.dinero || 0)}`).join('\n');
 
-    return interaction.reply({
+    return safeReply(interaction, {
       embeds: [new EmbedBuilder()
         .setColor(config.colors.gang)
         .setTitle('👥 Bandas de Los Santos')
@@ -238,50 +251,50 @@ async function execute(interaction, client) {
   // ── BANCO ──────────────────────────────────────────────────────────────────
   if (sub === 'banco') {
     const gang = await Gang.findById(player.gangId);
-    if (!gang) return interaction.reply({ embeds: [E.err('Sin banda', 'No perteneces a una banda.')], ephemeral: true });
+    if (!gang) return safeReply(interaction, { embeds: [E.err('Sin banda', 'No perteneces a una banda.')], ephemeral: true });
 
     const accion = interaction.options.getString('accion');
     const cantidad = interaction.options.getInteger('cantidad');
 
     if (accion === 'depositar') {
-      if (player.cash < cantidad) return interaction.reply({ embeds: [E.err('Fondos insuficientes', `Solo tienes ${formatMoney(player.cash)} en cash.`)], ephemeral: true });
+      if (player.cash < cantidad) return safeReply(interaction, { embeds: [E.err('Fondos insuficientes', `Solo tienes ${formatMoney(player.cash)} en cash.`)], ephemeral: true });
       player.cash -= cantidad;
       gang.dinero = (gang.dinero || 0) + cantidad;
       await player.save();
       await gang.save();
-      return interaction.reply({ embeds: [E.ok('Depósito realizado', `💰 Depositaste ${formatMoney(cantidad)} en el banco de la banda.\nBanco banda: ${formatMoney(gang.dinero)}`)] });
+      return safeReply(interaction, { embeds: [E.ok('Depósito realizado', `💰 Depositaste ${formatMoney(cantidad)} en el banco de la banda.\nBanco banda: ${formatMoney(gang.dinero)}`)] });
     }
 
     if (accion === 'retirar') {
-      if (!interaction.member.permissions.has(PermissionFlagsBits.Administrator) && !interaction.member.roles.cache.has('1441818963133731016')) return interaction.reply({ embeds: [E.err('Sin permisos', 'Solo el staff (Admin) puede retirar del banco de la banda.')], ephemeral: true });
-      if ((gang.dinero || 0) < cantidad) return interaction.reply({ embeds: [E.err('Fondos insuficientes', 'El banco de la banda no tiene suficiente.')], ephemeral: true });
+      if (!interaction.member.permissions.has(PermissionFlagsBits.Administrator) && !interaction.member.roles.cache.has('1441818963133731016')) return safeReply(interaction, { embeds: [E.err('Sin permisos', 'Solo el staff (Admin) puede retirar del banco de la banda.')], ephemeral: true });
+      if ((gang.dinero || 0) < cantidad) return safeReply(interaction, { embeds: [E.err('Fondos insuficientes', 'El banco de la banda no tiene suficiente.')], ephemeral: true });
       gang.dinero -= cantidad;
       player.cash += cantidad;
       await player.save();
       await gang.save();
-      return interaction.reply({ embeds: [E.ok('Retiro realizado', `💰 Retiraste ${formatMoney(cantidad)} del banco de la banda.`)] });
+      return safeReply(interaction, { embeds: [E.ok('Retiro realizado', `💰 Retiraste ${formatMoney(cantidad)} del banco de la banda.`)] });
     }
   }
 
   // ── PROMOVER / DEGRADAR ────────────────────────────────────────────────────
   if (sub === 'promover' || sub === 'degradar') {
     const gang = await Gang.findById(player.gangId);
-    if (!gang) return interaction.reply({ embeds: [E.err('Sin banda', 'No perteneces a ninguna banda.')], ephemeral: true });
-    if (!gang.isLider(interaction.user.id)) return interaction.reply({ embeds: [E.err('Sin permisos', 'Solo el líder puede promover/degradar.')], ephemeral: true });
+    if (!gang) return safeReply(interaction, { embeds: [E.err('Sin banda', 'No perteneces a ninguna banda.')], ephemeral: true });
+    if (!gang.isLider(interaction.user.id)) return safeReply(interaction, { embeds: [E.err('Sin permisos', 'Solo el líder puede promover/degradar.')], ephemeral: true });
 
     const target = interaction.options.getUser('usuario');
     const miembro = gang.getMiembro(target.id);
-    if (!miembro) return interaction.reply({ embeds: [E.err('No es miembro', 'Ese usuario no está en tu banda.')], ephemeral: true });
+    if (!miembro) return safeReply(interaction, { embeds: [E.err('No es miembro', 'Ese usuario no está en tu banda.')], ephemeral: true });
 
     const rangos = GANG_RANGOS;
     const currentIdx = rangos.indexOf(miembro.rango);
 
     let newRango;
     if (sub === 'promover') {
-      if (currentIdx <= 1) return interaction.reply({ embeds: [E.warn('Límite', 'No se puede promover más.')], ephemeral: true });
+      if (currentIdx <= 1) return safeReply(interaction, { embeds: [E.warn('Límite', 'No se puede promover más.')], ephemeral: true });
       newRango = rangos[currentIdx - 1];
     } else {
-      if (currentIdx >= rangos.length - 1) return interaction.reply({ embeds: [E.warn('Límite', 'Ya está en el rango más bajo.')], ephemeral: true });
+      if (currentIdx >= rangos.length - 1) return safeReply(interaction, { embeds: [E.warn('Límite', 'Ya está en el rango más bajo.')], ephemeral: true });
       newRango = rangos[currentIdx + 1];
     }
 
@@ -291,14 +304,14 @@ async function execute(interaction, client) {
     await gang.save();
     await targetPlayer.save();
 
-    return interaction.reply({ embeds: [E.ok(sub === 'promover' ? 'Promovido' : 'Degradado', `<@${target.id}> ahora es **${newRango}** en **${gang.nombre}**`)] });
+    return safeReply(interaction, { embeds: [E.ok(sub === 'promover' ? 'Promovido' : 'Degradado', `<@${target.id}> ahora es **${newRango}** en **${gang.nombre}**`)] });
   }
 
   // ── SALIR ──────────────────────────────────────────────────────────────────
   if (sub === 'salir') {
     const gang = await Gang.findById(player.gangId);
-    if (!gang) return interaction.reply({ embeds: [E.err('Sin banda', 'No perteneces a ninguna banda.')], ephemeral: true });
-    if (gang.isLider(interaction.user.id)) return interaction.reply({ embeds: [E.warn('Eres el líder', 'Transfiere el liderazgo o disuelve la banda con `/banda disolver`.')], ephemeral: true });
+    if (!gang) return safeReply(interaction, { embeds: [E.err('Sin banda', 'No perteneces a ninguna banda.')], ephemeral: true });
+    if (gang.isLider(interaction.user.id)) return safeReply(interaction, { embeds: [E.warn('Eres el líder', 'Transfiere el liderazgo o disuelve la banda con `/banda disolver`.')], ephemeral: true });
 
     gang.miembros = gang.miembros.filter(m => m.discordId !== interaction.user.id);
     player.gangId = null;
@@ -306,14 +319,14 @@ async function execute(interaction, client) {
     await gang.save();
     await player.save();
 
-    return interaction.reply({ embeds: [E.ok('Has salido', `Saliste de **${gang.nombre}**.`)] });
+    return safeReply(interaction, { embeds: [E.ok('Has salido', `Saliste de **${gang.nombre}**.`)] });
   }
 
   // ── DISOLVER ───────────────────────────────────────────────────────────────
   if (sub === 'disolver') {
     const gang = await Gang.findById(player.gangId);
-    if (!gang) return interaction.reply({ embeds: [E.err('Sin banda', 'No perteneces a ninguna banda.')], ephemeral: true });
-    if (!gang.isLider(interaction.user.id)) return interaction.reply({ embeds: [E.err('Sin permisos', 'Solo el líder puede disolver la banda.')], ephemeral: true });
+    if (!gang) return safeReply(interaction, { embeds: [E.err('Sin banda', 'No perteneces a ninguna banda.')], ephemeral: true });
+    if (!gang.isLider(interaction.user.id)) return safeReply(interaction, { embeds: [E.err('Sin permisos', 'Solo el líder puede disolver la banda.')], ephemeral: true });
 
     // Limpiar miembros
     const Player = require('../database/models/Player');
@@ -323,13 +336,13 @@ async function execute(interaction, client) {
     );
     await Gang.deleteOne({ _id: gang._id });
 
-    return interaction.reply({ embeds: [E.warn('Banda disuelta', `La banda **${gang.nombre}** ha sido disuelta.`)] });
+    return safeReply(interaction, { embeds: [E.warn('Banda disuelta', `La banda **${gang.nombre}** ha sido disuelta.`)] });
   }
 
   // ── TERRITORIO ─────────────────────────────────────────────────────────────
   if (sub === 'territorio') {
     const gang = await Gang.findById(player.gangId);
-    if (!gang) return interaction.reply({ embeds: [E.err('Sin banda', 'No perteneces a ninguna banda.')], ephemeral: true });
+    if (!gang) return safeReply(interaction, { embeds: [E.err('Sin banda', 'No perteneces a ninguna banda.')], ephemeral: true });
 
     const terrs = gang.territorios || [];
     const embed = new EmbedBuilder()
@@ -338,19 +351,19 @@ async function execute(interaction, client) {
       .setDescription(terrs.length ? terrs.map(t => `📍 ${t.nombre}`).join('\n') : '*Sin territorios controlados*')
       .addFields({ name: 'Total', value: `${terrs.length} territorios`, inline: true })
       .setTimestamp();
-    return interaction.reply({ embeds: [embed] });
+    return safeReply(interaction, { embeds: [embed] });
   }
 
   // ── GUERRA ─────────────────────────────────────────────────────────────────
   if (sub === 'guerra') {
     const myGang = await Gang.findById(player.gangId);
-    if (!myGang) return interaction.reply({ embeds: [E.err('Sin banda', 'No perteneces a ninguna banda.')], ephemeral: true });
-    if (!myGang.isLider(interaction.user.id)) return interaction.reply({ embeds: [E.err('Sin permisos', 'Solo el líder puede declarar guerras.')], ephemeral: true });
+    if (!myGang) return safeReply(interaction, { embeds: [E.err('Sin banda', 'No perteneces a ninguna banda.')], ephemeral: true });
+    if (!myGang.isLider(interaction.user.id)) return safeReply(interaction, { embeds: [E.err('Sin permisos', 'Solo el líder puede declarar guerras.')], ephemeral: true });
 
     const nombreEnemigo = interaction.options.getString('banda');
     const enemy = await Gang.findOne({ nombre: { $regex: nombreEnemigo, $options: 'i' } });
-    if (!enemy) return interaction.reply({ embeds: [E.err('Banda no encontrada', `No existe la banda "${nombreEnemigo}".`)], ephemeral: true });
-    if (enemy._id.toString() === myGang._id.toString()) return interaction.reply({ embeds: [E.err('Error', 'No puedes declararte la guerra a ti mismo.')], ephemeral: true });
+    if (!enemy) return safeReply(interaction, { embeds: [E.err('Banda no encontrada', `No existe la banda "${nombreEnemigo}".`)], ephemeral: true });
+    if (enemy._id.toString() === myGang._id.toString()) return safeReply(interaction, { embeds: [E.err('Error', 'No puedes declararte la guerra a ti mismo.')], ephemeral: true });
 
     myGang.enGuerra = true;
     myGang.guerraContra = enemy._id.toString();
@@ -358,7 +371,7 @@ async function execute(interaction, client) {
     myGang.guerraExpira = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
     await myGang.save();
 
-    return interaction.reply({
+    return safeReply(interaction, {
       embeds: [new EmbedBuilder()
         .setColor(config.colors.danger)
         .setTitle('⚔️ ¡Guerra declarada!')

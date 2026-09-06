@@ -184,7 +184,7 @@ async function execute(interaction, client) {
       ),
     );
 
-    const msg = await interaction.reply({ embeds: [embed], components: [row], fetchReply: true });
+    const msg = await interaction.reply({ embeds: [embed], components: [row], withResponse: true });
     const votos = new Map(); // userId -> opcionIndex
     const conteo = new Array(ops.length).fill(0);
 
