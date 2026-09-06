@@ -102,6 +102,11 @@ const guildConfigSchema = new mongoose.Schema({
     entradas:   { type: Boolean, default: true },
     salidas:    { type: Boolean, default: true },
   },
+
+  autoroles: {
+    users: { type: [String], default: [] },
+    bots:  { type: [String], default: [] },
+  },
 });
 
 module.exports = mongoose.model('GuildConfig', guildConfigSchema);

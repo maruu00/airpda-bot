@@ -325,6 +325,9 @@ const CATEGORIAS = [
     descripcion: 'Moderación, setup y control del servidor',
     color: 0xef4444,
     comandos: [
+      { cmd: '/autorole add [users|bots] [@rol]',   desc: 'Añadir autorol para nuevos miembros/bots' },
+      { cmd: '/autorole remove [users|bots] [@rol]',desc: 'Quitar autorol' },
+      { cmd: '/autorole list',            desc: 'Listar autoroles' },
       { cmd: '/admin setup',              desc: 'Setup automático: crea canales, categorías y roles' },
       { cmd: '/admin dar [@u] [tipo]',    desc: 'Dar dinero, XP o items a un jugador' },
       { cmd: '/admin quitar [@u] [tipo]', desc: 'Quitar dinero a un jugador' },

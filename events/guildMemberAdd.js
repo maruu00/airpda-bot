@@ -90,5 +90,14 @@ module.exports = {
       }
       if (newInvites) inviteCache.set(guild.id, new Map(newInvites.map(i => [i.code, i.uses])));
     } catch {}
+
+    // ─── Autoroles ────────────────────────────────────────────────────────
+    try {
+      const g2 = await require('../database/models/GuildConfig').findOne({ guildId: member.guild.id }).lean();
+      const lista = member.user.bot ? (g2?.autoroles?.bots || []) : (g2?.autoroles?.users || []);
+      for (const roleId of lista) {
+        await member.roles.add(roleId).catch(() => {});
+      }
+    } catch {}
   },
 };
