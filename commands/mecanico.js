@@ -148,17 +148,37 @@ async function execute(interaction, client) {
     else { restante -= player.cash; player.cash = 0; player.bank -= restante; }
     await player.save();
 
-    // Pagar al mecánico/emisor
+    // Reparto: 65% creador, 20% eliminado (piezas), 15% Banco del Estado
+    const montoTotal = factura.monto;
+    const paraEmisor = Math.floor(montoTotal * 0.65);
+    const paraPiezas = Math.floor(montoTotal * 0.20);
+    const paraEstado = montoTotal - paraEmisor - paraPiezas; // 15% restante
     if (factura.emisorId) {
       const emisor = await getPlayer(factura.emisorId, 'emisor');
-      emisor.cash += factura.monto;
+      emisor.cash += paraEmisor;
       await emisor.save();
     }
+    // 20% se elimina (no se asigna a nadie, es coste de piezas)
+    // 15% al Banco del Estado
+    try {
+      const BancoEstado = require('../database/models/BancoEstado');
+      await BancoEstado.findOneAndUpdate(
+        { guildId: interaction.guildId },
+        { $inc: { saldo: paraEstado, totalRecaudado: paraEstado }, $setOnInsert: { guildId: interaction.guildId } },
+        { upsert: true }
+      );
+    } catch {}
 
     factura.pagada = true;
     facturasTmp.set(factId, factura);
 
-    return interaction.editReply({ embeds: [E.ok('Factura pagada', `Pagaste \`${factId}\` por ${formatMoney(factura.monto)}.`)] });
+    return interaction.editReply({ embeds: [new EmbedBuilder().setColor(0x22c55e).setTitle('✅ Factura pagada')
+      .setDescription(`Pagaste \`${factId}\` por ${formatMoney(factura.monto)}.`)
+      .addFields(
+        { name: '👤 Creador (65%)', value: formatMoney(paraEmisor), inline: true },
+        { name: '🔧 Piezas (20%)', value: `Eliminado ${formatMoney(paraPiezas)}`, inline: true },
+        { name: '🏦 Estado (15%)', value: formatMoney(paraEstado), inline: true },
+      ).setTimestamp()] });
   }
 
   // ── TAXÍMETRO ON ──────────────────────────────────────────────────────────
