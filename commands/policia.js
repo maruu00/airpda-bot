@@ -399,7 +399,51 @@ async function execute(interaction, client) {
     const multaId = interaction.options.getString('id').toUpperCase();
     const multa = await Multa.findOne({ multaId, ciudadanoId: interaction.user.id, pagada: false });
 
-    if (!multa) return interaction.editReply({ embeds: [E.err('No encontrada', 'No tienes esa multa pendiente o ya está pagada.')] });
+    // Fallback: la web muestra el _id de la Sancion como "ID MULTA" — aceptar también el _id de la sanción
+    let pdaSancion = null;
+    let sancionPagar = null;
+    if (!multa) {
+      try {
+        const { Sancion } = require('../database/models/PdaModels');
+        const pdaApi = require('../utils/pdaApi');
+        const userId = interaction.user.id;
+        // Buscar por _id exacto (case-insensitive) entre las sanciones activas del usuario
+        const sancionesUser = await pdaApi.getSancionesByDiscordId(userId);
+        sancionPagar = sancionesUser.find(s =>
+          String(s._id).toUpperCase() === multaId ||
+          String(s._id).toLowerCase() === multaId.toLowerCase() ||
+          (s.botMultaId && String(s.botMultaId).toUpperCase() === multaId)
+        );
+        if (sancionPagar) pdaSancion = sancionPagar;
+      } catch {}
+    }
+
+    if (!multa && !sancionPagar) return interaction.editReply({ embeds: [E.err('No encontrada', 'No tienes esa multa pendiente o ya está pagada.')] });
+
+    // Si es sanción de la PDA web
+    if (!multa && sancionPagar) {
+      const cantidad = sancionPagar.cantidad || 0;
+      if (!cantidad || cantidad <= 0) return interaction.editReply({ embeds: [E.warn('Sin importe', 'Esta sanción no tiene importe económico. Se marca como cerrada.')].concat([]) });
+      const player = await getPlayer(interaction.user.id, interaction.user.username);
+      const total = player.cash + player.bank;
+      if (total < cantidad) {
+        return interaction.editReply({ embeds: [E.err('Fondos insuficientes', `Necesitas ${formatMoney(cantidad)} pero solo tienes ${formatMoney(total)}.`)] });
+      }
+      let restante = cantidad;
+      if (player.cash >= restante) { player.cash -= restante; restante = 0; }
+      else { restante -= player.cash; player.cash = 0; player.bank -= restante; }
+      await player.save();
+      // Ingresar al Banco del Estado
+      try {
+        const BancoEstado = require('../database/models/BancoEstado');
+        await BancoEstado.findOneAndUpdate({ guildId: interaction.guildId }, { $inc: { saldo: cantidad, totalRecaudado: cantidad } }, { upsert: true, setDefaultsOnInsert: true });
+      } catch {}
+      // Cerrar la sanción en la web
+      try { const pdaApi = require('../utils/pdaApi'); await pdaApi.desactivarSancion(sancionPagar._id); } catch {}
+      return interaction.editReply({
+        embeds: [new EmbedBuilder().setColor(0x22c55e).setTitle('✅ Multa pagada').setDescription(`Pagaste la sanción PDA **${String(sancionPagar._id).slice(-6)}** por ${formatMoney(cantidad)}.\n💵 Cash: ${formatMoney(player.cash)} | 🏦 Banco: ${formatMoney(player.bank)}\n\n🏦 **${formatMoney(cantidad)}** ingresados al **Banco del Estado**.`).setTimestamp()],
+      });
+    }
 
     const player = await getPlayer(interaction.user.id, interaction.user.username);
     const total = player.cash + player.bank;
