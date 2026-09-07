@@ -129,7 +129,7 @@ async function execute(interaction, client) {
 
     try {
       const member = interaction.guild.members.cache.get(target.id);
-      if (member && !member.bannable) return interaction.reply({ embeds: [E.err('Sin permisos', 'No puedo banear a ese usuario.')], ephemeral: true });
+      if (member && !member.bannable) return interaction.reply({ embeds: [E.err('Sin permisos', 'No puedo banear a ese usuario.')], flags: 64 });
 
       await interaction.guild.bans.create(target.id, { reason: `${interaction.user.tag}: ${razon}`, deleteMessageSeconds: dias * 86400 });
 
@@ -151,7 +151,7 @@ async function execute(interaction, client) {
 
       try { await target.send(`🔨 Has sido **baneado** de **${interaction.guild.name}**.\nRazón: ${razon}`); } catch {}
     } catch (e) {
-      return interaction.reply({ embeds: [E.err('Error', e.message)], ephemeral: true });
+      return interaction.reply({ embeds: [E.err('Error', e.message)], flags: 64 });
     }
   }
 
@@ -160,8 +160,8 @@ async function execute(interaction, client) {
     const target = interaction.options.getMember('usuario');
     const razon = interaction.options.getString('razon') || 'Sin razón';
 
-    if (!target) return interaction.reply({ embeds: [E.err('No encontrado', 'Usuario no está en el servidor.')], ephemeral: true });
-    if (!target.kickable) return interaction.reply({ embeds: [E.err('Sin permisos', 'No puedo expulsar a ese usuario.')], ephemeral: true });
+    if (!target) return interaction.reply({ embeds: [E.err('No encontrado', 'Usuario no está en el servidor.')], flags: 64 });
+    if (!target.kickable) return interaction.reply({ embeds: [E.err('Sin permisos', 'No puedo expulsar a ese usuario.')], flags: 64 });
 
     try {
       await target.kick(`${interaction.user.tag}: ${razon}`);
@@ -178,7 +178,7 @@ async function execute(interaction, client) {
       await logMod(interaction.guild, gc, new EmbedBuilder().setColor(config.colors.warning).setTitle('👢 Kick')
         .addFields({ name: 'Usuario', value: target.user.tag, inline: true }, { name: 'Razón', value: razon }).setTimestamp());
     } catch (e) {
-      return interaction.reply({ embeds: [E.err('Error', e.message)], ephemeral: true });
+      return interaction.reply({ embeds: [E.err('Error', e.message)], flags: 64 });
     }
   }
 
@@ -292,7 +292,7 @@ async function execute(interaction, client) {
     const duracion = parseDuration(interaction.options.getString('duracion') || '30m');
     const razon = interaction.options.getString('razon') || 'Sin razón';
 
-    if (!target) return interaction.reply({ embeds: [E.err('No encontrado', 'Usuario no está en el servidor.')], ephemeral: true });
+    if (!target) return interaction.reply({ embeds: [E.err('No encontrado', 'Usuario no está en el servidor.')], flags: 64 });
 
     // Discord timeout (nativo)
     await target.timeout(duracion, razon).catch(() => {});
@@ -309,7 +309,7 @@ async function execute(interaction, client) {
   // ── UNMUTE ──────────────────────────────────────────────────────────────────
   if (cmd === 'unmute') {
     const target = interaction.options.getMember('usuario');
-    if (!target) return interaction.reply({ embeds: [E.err('No encontrado', 'Usuario no encontrado.')], ephemeral: true });
+    if (!target) return interaction.reply({ embeds: [E.err('No encontrado', 'Usuario no encontrado.')], flags: 64 });
 
     await target.timeout(null).catch(() => {});
     const muteRole = gc?.roles?.muted;
@@ -330,7 +330,7 @@ async function execute(interaction, client) {
     const deleted = await interaction.channel.bulkDelete(mensajes, true).catch(() => null);
     const n = deleted?.size || 0;
 
-    await interaction.reply({ embeds: [E.ok('Mensajes eliminados', `🗑️ Se eliminaron **${n}** mensajes.`)], ephemeral: true });
+    await interaction.reply({ embeds: [E.ok('Mensajes eliminados', `🗑️ Se eliminaron **${n}** mensajes.`)], flags: 64 });
   }
 
   // ── SLOWMODE ─────────────────────────────────────────────────────────────────
@@ -360,7 +360,7 @@ async function execute(interaction, client) {
     const minutos = interaction.options.getInteger('minutos');
     const razon = interaction.options.getString('razon') || 'Sin razón';
 
-    if (!target) return interaction.reply({ embeds: [E.err('No encontrado', 'Usuario no está en el servidor.')], ephemeral: true });
+    if (!target) return interaction.reply({ embeds: [E.err('No encontrado', 'Usuario no está en el servidor.')], flags: 64 });
     await target.timeout(minutos * 60000, razon);
 
     return interaction.reply({ embeds: [E.ok('Timeout aplicado', `⏰ ${target.user.tag} está en timeout por **${minutos} minutos**. Razón: ${razon}`)] });

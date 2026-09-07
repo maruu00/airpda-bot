@@ -77,7 +77,7 @@ async function execute(interaction, client) {
 
   // ── SINCRONIZAR DESDE PDA ──────────────────────────────────────────────────
   if (sub === 'sincronizar') {
-    await interaction.deferReply({ ephemeral: true });
+    await interaction.deferReply({ flags: 64 });
     const player = await getPlayer(interaction.user.id, interaction.user.username);
 
     try {
@@ -126,7 +126,7 @@ async function execute(interaction, client) {
     const player = await getPlayer(interaction.user.id, interaction.user.username);
 
     if (player.personajeCreado) {
-      return interaction.reply({ embeds: [E.warn('Personaje existente', `Ya tienes un personaje creado: **${player.getFullName()}**.\nUsa \`/personaje editar\` para modificarlo.`)], ephemeral: true });
+      return interaction.reply({ embeds: [E.warn('Personaje existente', `Ya tienes un personaje creado: **${player.getFullName()}**.\nUsa \`/personaje editar\` para modificarlo.`)], flags: 64 });
     }
 
     player.nombre = interaction.options.getString('nombre');
@@ -171,7 +171,7 @@ async function execute(interaction, client) {
     const player = await getPlayer(target.id, target.username);
 
     if (!player.personajeCreado) {
-      return interaction.reply({ embeds: [E.warn('Sin personaje', `${target.id === interaction.user.id ? 'No tienes' : 'Este usuario no tiene'} un personaje creado.\nUsa \`/personaje crear\` para comenzar.`)], ephemeral: true });
+      return interaction.reply({ embeds: [E.warn('Sin personaje', `${target.id === interaction.user.id ? 'No tienes' : 'Este usuario no tiene'} un personaje creado.\nUsa \`/personaje crear\` para comenzar.`)], flags: 64 });
     }
 
     applyVitalDecay(player);
@@ -190,7 +190,7 @@ async function execute(interaction, client) {
       return interaction.reply({
         content: '🌍 **¿Cuál es tu nacionalidad?** Selecciona tu país en el menú.',
         components: [row],
-        ephemeral: true,
+        flags: 64,
       });
     }
 
@@ -200,7 +200,7 @@ async function execute(interaction, client) {
   // ── EDITAR ─────────────────────────────────────────────────────────────────
   if (sub === 'editar') {
     const player = await getPlayer(interaction.user.id, interaction.user.username);
-    if (!player.personajeCreado) return interaction.reply({ embeds: [E.warn('Sin personaje', 'Primero crea tu personaje con `/personaje crear`.')], ephemeral: true });
+    if (!player.personajeCreado) return interaction.reply({ embeds: [E.warn('Sin personaje', 'Primero crea tu personaje con `/personaje crear`.')], flags: 64 });
 
     const campo = interaction.options.getString('campo');
     const valor = interaction.options.getString('valor');
@@ -208,7 +208,7 @@ async function execute(interaction, client) {
     if (campo === 'trabajo') {
       if (!TRABAJOS[valor.toLowerCase()]) {
         const lista = Object.entries(TRABAJOS).map(([k, v]) => `\`${k}\` ${v.emoji}`).join(' · ');
-        return interaction.reply({ embeds: [E.warn('Trabajo inválido', `Trabajos disponibles:\n${lista}`)], ephemeral: true });
+        return interaction.reply({ embeds: [E.warn('Trabajo inválido', `Trabajos disponibles:\n${lista}`)], flags: 64 });
       }
       player.trabajo = valor.toLowerCase();
     } else if (campo === 'bio') {
@@ -221,7 +221,7 @@ async function execute(interaction, client) {
         .setPlaceholder('🌍 Selecciona tu nacionalidad...')
         .addOptions(PAISES);
       const row = new ActionRowBuilder().addComponents(select);
-      return interaction.reply({ content: '🌍 **¿Cuál es tu nacionalidad?**', components: [row], ephemeral: true });
+      return interaction.reply({ content: '🌍 **¿Cuál es tu nacionalidad?**', components: [row], flags: 64 });
     }
 
     await player.save();
@@ -233,7 +233,7 @@ async function execute(interaction, client) {
     const target = interaction.options.getUser('usuario') || interaction.user;
     const player = await getPlayer(target.id, target.username);
 
-    if (!player.personajeCreado) return interaction.reply({ embeds: [E.warn('Sin personaje', 'Este usuario no tiene personaje.')], ephemeral: true });
+    if (!player.personajeCreado) return interaction.reply({ embeds: [E.warn('Sin personaje', 'Este usuario no tiene personaje.')], flags: 64 });
 
     const inv = await getInventory(target.id);
     const embed = new EmbedBuilder()
@@ -256,7 +256,7 @@ async function execute(interaction, client) {
   // ── BORRAR ─────────────────────────────────────────────────────────────────
   if (sub === 'borrar') {
     const player = await getPlayer(interaction.user.id, interaction.user.username);
-    if (!player.personajeCreado) return interaction.reply({ embeds: [E.warn('Sin personaje', 'No tienes personaje creado.')], ephemeral: true });
+    if (!player.personajeCreado) return interaction.reply({ embeds: [E.warn('Sin personaje', 'No tienes personaje creado.')], flags: 64 });
 
     const row = new ActionRowBuilder().addComponents(
       new ButtonBuilder().setCustomId('confirm_delete_char').setLabel('Sí, borrar').setStyle(ButtonStyle.Danger),
@@ -266,7 +266,7 @@ async function execute(interaction, client) {
     const reply = await interaction.reply({
       embeds: [E.warn('⚠️ Confirmar borrado', `¿Seguro que quieres **eliminar permanentemente** a **${player.getFullName()}**?\nPerderás todo: dinero, inventario, vehículos, propiedades.`)],
       components: [row],
-      ephemeral: true,
+      flags: 64,
     });
 
     const collector = reply.createMessageComponentCollector({ time: 30000 });
@@ -329,14 +329,14 @@ async function execute(interaction, client) {
   // ── NACIONALIDAD ──────────────────────────────────────────────────────────
   if (sub === 'nacionalidad') {
     const player = await getPlayer(interaction.user.id, interaction.user.username);
-    if (!player.personajeCreado) return interaction.reply({ embeds: [E.warn('Sin personaje', 'Primero crea tu personaje con `/personaje crear`.')], ephemeral: true });
+    if (!player.personajeCreado) return interaction.reply({ embeds: [E.warn('Sin personaje', 'Primero crea tu personaje con `/personaje crear`.')], flags: 64 });
 
     const select = new StringSelectMenuBuilder()
       .setCustomId(`nacionalidad_${interaction.user.id}`)
       .setPlaceholder('🌍 Selecciona tu nacionalidad...')
       .addOptions(PAISES);
     const row = new ActionRowBuilder().addComponents(select);
-    return interaction.reply({ content: '🌍 **¿Cuál es tu nacionalidad?**', components: [row], ephemeral: true });
+    return interaction.reply({ content: '🌍 **¿Cuál es tu nacionalidad?**', components: [row], flags: 64 });
   }
 }
 

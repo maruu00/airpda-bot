@@ -54,7 +54,7 @@ async function execute(interaction, client) {
   const player = await getPlayer(interaction.user.id, interaction.user.username);
 
   if (!player.personajeCreado) {
-    return interaction.reply({ embeds: [E.err('Sin personaje', 'Necesitas un personaje para usar el móvil.')], ephemeral: true });
+    return interaction.reply({ embeds: [E.err('Sin personaje', 'Necesitas un personaje para usar el móvil.')], flags: 64 });
   }
 
   // ─── Función para mostrar la pantalla principal ──────────────────────────
@@ -80,7 +80,7 @@ async function execute(interaction, client) {
       new ButtonBuilder().setCustomId('phone_cerrar').setLabel('❌ Cerrar').setStyle(ButtonStyle.Danger),
     );
 
-    const opts = { embeds: [embed], components: [row1, row2, row3], ephemeral: true };
+    const opts = { embeds: [embed], components: [row1, row2, row3], flags: 64 };
     return editar ? inter.update(opts) : inter.reply(opts);
   }
 

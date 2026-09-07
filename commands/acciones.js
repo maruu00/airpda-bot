@@ -71,7 +71,7 @@ async function execute(interaction, client) {
   const player = await getPlayer(interaction.user.id, interaction.user.username);
 
   if (!player.personajeCreado) {
-    return interaction.reply({ embeds: [E.err('Sin personaje', 'Necesitas un personaje.')], ephemeral: true });
+    return interaction.reply({ embeds: [E.err('Sin personaje', 'Necesitas un personaje.')], flags: 64 });
   }
 
   // ── Acciones con otro usuario ─────────────────────────────────────────────
@@ -147,7 +147,7 @@ async function execute(interaction, client) {
     if (last && (last.getTime() + cooldownMs > Date.now())) {
       const restante = last.getTime() + cooldownMs - Date.now();
       const { formatCooldown } = require('../utils/helpers');
-      return interaction.reply({ embeds: [E.warn('Cooldown', `Espera ${formatCooldown(restante)} para volver a talar.`)], ephemeral: true });
+      return interaction.reply({ embeds: [E.warn('Cooldown', `Espera ${formatCooldown(restante)} para volver a talar.`)], flags: 64 });
     }
 
     await interaction.deferReply();
@@ -179,7 +179,7 @@ async function execute(interaction, client) {
     const cooldownMs = 20 * 60 * 1000;
     if (last && (last.getTime() + cooldownMs > Date.now())) {
       const restante = last.getTime() + cooldownMs - Date.now();
-      return interaction.reply({ embeds: [E.warn('Cooldown', `Espera ${formatCooldown(restante)} para volver a picar.`)], ephemeral: true });
+      return interaction.reply({ embeds: [E.warn('Cooldown', `Espera ${formatCooldown(restante)} para volver a picar.`)], flags: 64 });
     }
 
     await interaction.deferReply();

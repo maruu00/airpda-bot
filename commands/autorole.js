@@ -20,19 +20,19 @@ async function execute(interaction) {
   if (sub === 'list') {
     const users = (gc.autoroles.users || []).map(id => `<@&${id}>`).join(', ') || '*Vacío*';
     const bots = (gc.autoroles.bots || []).map(id => `<@&${id}>`).join(', ') || '*Vacío*';
-    return interaction.reply({ embeds: [new EmbedBuilder().setColor(0x3b82f6).setTitle('⚙️ Autoroles').addFields({ name: '👤 Usuarios', value: users, inline: false }, { name: '🤖 Bots', value: bots, inline: false })], ephemeral: true });
+    return interaction.reply({ embeds: [new EmbedBuilder().setColor(0x3b82f6).setTitle('⚙️ Autoroles').addFields({ name: '👤 Usuarios', value: users, inline: false }, { name: '🤖 Bots', value: bots, inline: false })], flags: 64 });
   }
   const tipo = interaction.options.getString('tipo');
   const rol = interaction.options.getRole('rol');
   if (sub === 'add') {
-    if (gc.autoroles[tipo].includes(rol.id)) return interaction.reply({ content: `❌ <@&${rol.id}> ya está en autoroles de ${tipo}.`, ephemeral: true });
+    if (gc.autoroles[tipo].includes(rol.id)) return interaction.reply({ content: `❌ <@&${rol.id}> ya está en autoroles de ${tipo}.`, flags: 64 });
     gc.autoroles[tipo].push(rol.id);
     gc.markModified('autoroles');
     await gc.save();
     return interaction.reply({ embeds: [new EmbedBuilder().setColor(0x22c55e).setTitle('✅ Autorol añadido').setDescription(`<@&${rol.id}> → **${tipo}**`)] });
   }
   if (sub === 'remove') {
-    if (!gc.autoroles[tipo].includes(rol.id)) return interaction.reply({ content: `❌ <@&${rol.id}> no está en ${tipo}.`, ephemeral: true });
+    if (!gc.autoroles[tipo].includes(rol.id)) return interaction.reply({ content: `❌ <@&${rol.id}> no está en ${tipo}.`, flags: 64 });
     gc.autoroles[tipo] = gc.autoroles[tipo].filter(id => id !== rol.id);
     gc.markModified('autoroles');
     await gc.save();

@@ -21,7 +21,7 @@ const { ICONS, BANNERS, addImage } = require('../utils/images');
 async function requirePersonaje(interaction) {
   const player = await getPlayer(interaction.user.id, interaction.user.username);
   if (!player.personajeCreado) {
-    await interaction.reply({ embeds: [E.warn('Sin personaje', 'Crea tu personaje con `/personaje crear`.')], ephemeral: true });
+    await interaction.reply({ embeds: [E.warn('Sin personaje', 'Crea tu personaje con `/personaje crear`.')], flags: 64 });
     return null;
   }
   return player;
@@ -156,7 +156,7 @@ async function execute(interaction, client) {
       if (player.pinBanco) {
         return interaction.reply({
           embeds: [E.warn('Cuenta existente', 'Ya tienes una cuenta bancaria creada.\nUsa `/banco cambiar-pin` para cambiar el PIN.')],
-          ephemeral: true,
+          flags: 64,
         });
       }
 
@@ -195,10 +195,10 @@ async function execute(interaction, client) {
       const pin2 = modalResp.fields.getTextInputValue('pin_confirm');
 
       if (!/^\d{4}$/.test(pin1)) {
-        return modalResp.reply({ embeds: [E.err('PIN inválido', 'El PIN debe ser exactamente 4 dígitos numéricos.')], ephemeral: true });
+        return modalResp.reply({ embeds: [E.err('PIN inválido', 'El PIN debe ser exactamente 4 dígitos numéricos.')], flags: 64 });
       }
       if (pin1 !== pin2) {
-        return modalResp.reply({ embeds: [E.err('PINes no coinciden', 'Los dos PINes introducidos son diferentes.')], ephemeral: true });
+        return modalResp.reply({ embeds: [E.err('PINes no coinciden', 'Los dos PINes introducidos son diferentes.')], flags: 64 });
       }
 
       player.pinBanco = await hashPin(pin1);
@@ -218,7 +218,7 @@ async function execute(interaction, client) {
           )
           .setFooter({ text: '⚠️ Nunca compartas tu PIN · LS National Bank' })
           .setTimestamp()],
-        ephemeral: true,
+        flags: 64,
       });
     }
 
@@ -245,16 +245,16 @@ async function execute(interaction, client) {
         .setFooter({ text: tieneCuenta ? 'LS National Bank  ·  Cuenta activa' : 'Usa /banco crear para abrir tu cuenta' })
         .setTimestamp();
 
-      return interaction.reply({ embeds: [embed], ephemeral: true });
+      return interaction.reply({ embeds: [embed], flags: 64 });
     }
 
     // /banco ahorros-crear
     if (sub === 'ahorros-crear') {
       if (!player.pinBanco) {
-        return interaction.reply({ embeds: [E.err('Sin cuenta corriente', 'Primero crea tu cuenta corriente con `/banco crear`.')], ephemeral: true });
+        return interaction.reply({ embeds: [E.err('Sin cuenta corriente', 'Primero crea tu cuenta corriente con `/banco crear`.')], flags: 64 });
       }
       if (player.pinBancoAhorros) {
-        return interaction.reply({ embeds: [E.warn('Ya existe', `Ya tienes una cuenta de ahorros con **${formatMoney(player.bankAhorros)}**.`)], ephemeral: true });
+        return interaction.reply({ embeds: [E.warn('Ya existe', `Ya tienes una cuenta de ahorros con **${formatMoney(player.bankAhorros)}**.`)], flags: 64 });
       }
 
       const modal = new ModalBuilder()
@@ -283,8 +283,8 @@ async function execute(interaction, client) {
 
       const p1 = resp.fields.getTextInputValue('pin_ahorros');
       const p2 = resp.fields.getTextInputValue('pin_ahorros_confirm');
-      if (!/^\d{4}$/.test(p1)) return resp.reply({ embeds: [E.err('PIN inválido', 'El PIN debe ser 4 dígitos numéricos.')], ephemeral: true });
-      if (p1 !== p2) return resp.reply({ embeds: [E.err('PINes no coinciden', 'Los PINes no coinciden.')], ephemeral: true });
+      if (!/^\d{4}$/.test(p1)) return resp.reply({ embeds: [E.err('PIN inválido', 'El PIN debe ser 4 dígitos numéricos.')], flags: 64 });
+      if (p1 !== p2) return resp.reply({ embeds: [E.err('PINes no coinciden', 'Los PINes no coinciden.')], flags: 64 });
 
       player.pinBancoAhorros = await hashPin(p1);
       player.bankAhorros = player.bankAhorros || 0;
@@ -302,21 +302,21 @@ async function execute(interaction, client) {
           )
           .setFooter({ text: 'Usa /banco ahorros-depositar y /banco ahorros-retirar para mover fondos' })
           .setTimestamp()],
-        ephemeral: true,
+        flags: 64,
       });
     }
 
     // /banco ahorros-depositar
     if (sub === 'ahorros-depositar') {
-      if (!player.pinBanco) return interaction.reply({ embeds: [E.err('Sin cuenta', 'Crea primero tu cuenta corriente.')], ephemeral: true });
-      if (!player.pinBancoAhorros) return interaction.reply({ embeds: [E.err('Sin cuenta de ahorros', 'Crea tu cuenta de ahorros con `/banco ahorros-crear`.')], ephemeral: true });
+      if (!player.pinBanco) return interaction.reply({ embeds: [E.err('Sin cuenta', 'Crea primero tu cuenta corriente.')], flags: 64 });
+      if (!player.pinBancoAhorros) return interaction.reply({ embeds: [E.err('Sin cuenta de ahorros', 'Crea tu cuenta de ahorros con `/banco ahorros-crear`.')], flags: 64 });
 
       const pin  = interaction.options.getString('pin');
       const cant = interaction.options.getInteger('cantidad');
 
       const { ok: pinOk } = await verifyPin(pin, player.pinBanco);
-      if (!pinOk) return interaction.reply({ embeds: [E.err('PIN incorrecto', 'El PIN de tu cuenta corriente no es correcto.')], ephemeral: true });
-      if (cant > player.bank) return interaction.reply({ embeds: [E.err('Sin fondos', `Solo tienes ${formatMoney(player.bank)} en la cuenta corriente.`)], ephemeral: true });
+      if (!pinOk) return interaction.reply({ embeds: [E.err('PIN incorrecto', 'El PIN de tu cuenta corriente no es correcto.')], flags: 64 });
+      if (cant > player.bank) return interaction.reply({ embeds: [E.err('Sin fondos', `Solo tienes ${formatMoney(player.bank)} en la cuenta corriente.`)], flags: 64 });
 
       player.bank -= cant;
       player.bankAhorros += cant;
@@ -331,20 +331,20 @@ async function execute(interaction, client) {
             { name: '🏦 Cuenta corriente',  value: formatMoney(player.bank),          inline: true },
             { name: '💰 Cuenta de ahorros', value: formatMoney(player.bankAhorros),   inline: true },
           ).setTimestamp()],
-        ephemeral: true,
+        flags: 64,
       });
     }
 
     // /banco ahorros-retirar
     if (sub === 'ahorros-retirar') {
-      if (!player.pinBancoAhorros) return interaction.reply({ embeds: [E.err('Sin cuenta de ahorros', 'No tienes cuenta de ahorros.')], ephemeral: true });
+      if (!player.pinBancoAhorros) return interaction.reply({ embeds: [E.err('Sin cuenta de ahorros', 'No tienes cuenta de ahorros.')], flags: 64 });
 
       const pin  = interaction.options.getString('pin');
       const cant = interaction.options.getInteger('cantidad');
 
       const { ok: pinOk2 } = await verifyPin(pin, player.pinBancoAhorros);
-      if (!pinOk2) return interaction.reply({ embeds: [E.err('PIN incorrecto', 'El PIN de tu cuenta de ahorros no es correcto.')], ephemeral: true });
-      if (cant > player.bankAhorros) return interaction.reply({ embeds: [E.err('Sin fondos', `Solo tienes ${formatMoney(player.bankAhorros)} en ahorros.`)], ephemeral: true });
+      if (!pinOk2) return interaction.reply({ embeds: [E.err('PIN incorrecto', 'El PIN de tu cuenta de ahorros no es correcto.')], flags: 64 });
+      if (cant > player.bankAhorros) return interaction.reply({ embeds: [E.err('Sin fondos', `Solo tienes ${formatMoney(player.bankAhorros)} en ahorros.`)], flags: 64 });
 
       player.bankAhorros -= cant;
       player.bank += cant;
@@ -359,14 +359,14 @@ async function execute(interaction, client) {
             { name: '🏦 Cuenta corriente',    value: formatMoney(player.bank),          inline: true },
             { name: '💰 Cuenta de ahorros',   value: formatMoney(player.bankAhorros),   inline: true },
           ).setTimestamp()],
-        ephemeral: true,
+        flags: 64,
       });
     }
 
     // /banco cambiar-pin
     if (sub === 'cambiar-pin') {
       if (!player.pinBanco) {
-        return interaction.reply({ embeds: [E.err('Sin cuenta', 'Primero crea tu cuenta con `/banco crear`.')], ephemeral: true });
+        return interaction.reply({ embeds: [E.err('Sin cuenta', 'Primero crea tu cuenta con `/banco crear`.')], flags: 64 });
       }
 
       const modal = new ModalBuilder()
@@ -398,15 +398,15 @@ async function execute(interaction, client) {
 
       const { ok: pinOk3 } = await verifyPin(actual, player.pinBanco);
       if (!pinOk3) {
-        return resp.reply({ embeds: [E.err('PIN incorrecto', 'El PIN actual introducido no es correcto.')], ephemeral: true });
+        return resp.reply({ embeds: [E.err('PIN incorrecto', 'El PIN actual introducido no es correcto.')], flags: 64 });
       }
       if (!/^\d{4}$/.test(nuevo)) {
-        return resp.reply({ embeds: [E.err('PIN inválido', 'El nuevo PIN debe ser exactamente 4 dígitos numéricos.')], ephemeral: true });
+        return resp.reply({ embeds: [E.err('PIN inválido', 'El nuevo PIN debe ser exactamente 4 dígitos numéricos.')], flags: 64 });
       }
 
       player.pinBanco = await hashPin(nuevo);
       await player.save();
-      return resp.reply({ embeds: [E.ok('PIN actualizado', 'Tu PIN bancario ha sido cambiado con éxito.')], ephemeral: true });
+      return resp.reply({ embeds: [E.ok('PIN actualizado', 'Tu PIN bancario ha sido cambiado con éxito.')], flags: 64 });
     }
   }
 
@@ -418,17 +418,17 @@ async function execute(interaction, client) {
     if (player.pinBanco) {
       const pin = interaction.options.getString('pin');
       if (!pin) {
-        return interaction.reply({ embeds: [E.err('PIN requerido', 'Tu cuenta tiene PIN. Pásalo con la opción `pin`.\nEj: `/depositar cantidad:500 pin:1234`')], ephemeral: true });
+        return interaction.reply({ embeds: [E.err('PIN requerido', 'Tu cuenta tiene PIN. Pásalo con la opción `pin`.\nEj: `/depositar cantidad:500 pin:1234`')], flags: 64 });
       }
       const { ok: pinOk } = await verifyPin(pin, player.pinBanco);
       if (!pinOk) {
-        return interaction.reply({ embeds: [E.err('PIN incorrecto', 'El PIN introducido no es correcto.')], ephemeral: true });
+        return interaction.reply({ embeds: [E.err('PIN incorrecto', 'El PIN introducido no es correcto.')], flags: 64 });
       }
     }
 
     const cant = interaction.options.getInteger('cantidad');
     if (cant > player.cash) {
-      return interaction.reply({ embeds: [E.err('Fondos insuficientes', `Solo tienes ${formatMoney(player.cash)} en efectivo.`)], ephemeral: true });
+      return interaction.reply({ embeds: [E.err('Fondos insuficientes', `Solo tienes ${formatMoney(player.cash)} en efectivo.`)], flags: 64 });
     }
     player.cash -= cant;
     player.bank += cant;
@@ -456,17 +456,17 @@ async function execute(interaction, client) {
     if (player.pinBanco) {
       const pin = interaction.options.getString('pin');
       if (!pin) {
-        return interaction.reply({ embeds: [E.err('PIN requerido', 'Tu cuenta tiene PIN. Pásalo con la opción `pin`.')], ephemeral: true });
+        return interaction.reply({ embeds: [E.err('PIN requerido', 'Tu cuenta tiene PIN. Pásalo con la opción `pin`.')], flags: 64 });
       }
       const { ok: pinOk5 } = await verifyPin(pin, player.pinBanco);
       if (!pinOk5) {
-        return interaction.reply({ embeds: [E.err('PIN incorrecto', 'El PIN introducido no es correcto.')], ephemeral: true });
+        return interaction.reply({ embeds: [E.err('PIN incorrecto', 'El PIN introducido no es correcto.')], flags: 64 });
       }
     }
 
     const cant = interaction.options.getInteger('cantidad');
     if (cant > player.bank) {
-      return interaction.reply({ embeds: [E.err('Fondos insuficientes', `Solo tienes ${formatMoney(player.bank)} en el banco.`)], ephemeral: true });
+      return interaction.reply({ embeds: [E.err('Fondos insuficientes', `Solo tienes ${formatMoney(player.bank)} en el banco.`)], flags: 64 });
     }
     player.bank -= cant;
     player.cash += cant;
@@ -492,7 +492,7 @@ async function execute(interaction, client) {
     if (!player) return;
     const target = interaction.options.getUser('usuario');
     if (target.id === interaction.user.id) {
-      return interaction.reply({ embeds: [E.err('Error', 'No puedes transferirte dinero a ti mismo.')], ephemeral: true });
+      return interaction.reply({ embeds: [E.err('Error', 'No puedes transferirte dinero a ti mismo.')], flags: 64 });
     }
     const cant   = interaction.options.getInteger('cantidad');
     const origen = interaction.options.getString('origen') || 'banco';
@@ -500,21 +500,21 @@ async function execute(interaction, client) {
     if (origen === 'banco' && player.pinBanco) {
       const pin = interaction.options.getString('pin');
       if (!pin) {
-        return interaction.reply({ embeds: [E.err('PIN requerido', 'Para transferir desde el banco necesitas tu PIN.')], ephemeral: true });
+        return interaction.reply({ embeds: [E.err('PIN requerido', 'Para transferir desde el banco necesitas tu PIN.')], flags: 64 });
       }
       const { ok: pinOk6 } = await verifyPin(pin, player.pinBanco);
       if (!pinOk6) {
-        return interaction.reply({ embeds: [E.err('PIN incorrecto', 'El PIN introducido no es correcto.')], ephemeral: true });
+        return interaction.reply({ embeds: [E.err('PIN incorrecto', 'El PIN introducido no es correcto.')], flags: 64 });
       }
     }
 
     const targetPlayer = await getPlayer(target.id, target.username);
     if (!targetPlayer.personajeCreado) {
-      return interaction.reply({ embeds: [E.err('Sin personaje', 'Ese usuario no tiene personaje.')], ephemeral: true });
+      return interaction.reply({ embeds: [E.err('Sin personaje', 'Ese usuario no tiene personaje.')], flags: 64 });
     }
 
-    if (origen === 'cash'  && cant > player.cash) return interaction.reply({ embeds: [E.err('Fondos insuficientes', `No tienes ${formatMoney(cant)} en cash.`)], ephemeral: true });
-    if (origen === 'banco' && cant > player.bank) return interaction.reply({ embeds: [E.err('Fondos insuficientes', `No tienes ${formatMoney(cant)} en el banco.`)], ephemeral: true });
+    if (origen === 'cash'  && cant > player.cash) return interaction.reply({ embeds: [E.err('Fondos insuficientes', `No tienes ${formatMoney(cant)} en cash.`)], flags: 64 });
+    if (origen === 'banco' && cant > player.bank) return interaction.reply({ embeds: [E.err('Fondos insuficientes', `No tienes ${formatMoney(cant)} en el banco.`)], flags: 64 });
 
     if (origen === 'cash') { player.cash -= cant; targetPlayer.bank += cant; }
     else                   { player.bank -= cant; targetPlayer.bank += cant; }
@@ -548,7 +548,7 @@ async function execute(interaction, client) {
     const lastCobro   = player.getCooldown('cobrar');
     const remaining   = lastCobro ? lastCobro.getTime() + config.cooldowns.cobrar - Date.now() : 0;
     if (remaining > 0) {
-      return interaction.reply({ embeds: [E.warn('Cooldown', `Podrás cobrar en **${formatCooldown(remaining)}**`)], ephemeral: true });
+      return interaction.reply({ embeds: [E.warn('Cooldown', `Podrás cobrar en **${formatCooldown(remaining)}**`)], flags: 64 });
     }
 
     const trabajo = TRABAJOS[player.trabajo?.toLowerCase()];
@@ -579,12 +579,12 @@ async function execute(interaction, client) {
     const target = interaction.options.getUser('usuario');
     const cant   = interaction.options.getInteger('cantidad');
     if (cant > player.cash) {
-      return interaction.reply({ embeds: [E.err('Fondos insuficientes', `Solo tienes ${formatMoney(player.cash)} en cash.`)], ephemeral: true });
+      return interaction.reply({ embeds: [E.err('Fondos insuficientes', `Solo tienes ${formatMoney(player.cash)} en cash.`)], flags: 64 });
     }
 
     const targetPlayer = await getPlayer(target.id, target.username);
     if (!targetPlayer.personajeCreado) {
-      return interaction.reply({ embeds: [E.err('Sin personaje', 'Ese usuario no tiene personaje.')], ephemeral: true });
+      return interaction.reply({ embeds: [E.err('Sin personaje', 'Ese usuario no tiene personaje.')], flags: 64 });
     }
 
     player.cash      -= cant;
@@ -606,7 +606,7 @@ async function execute(interaction, client) {
     if (!player) return;
     const cant = interaction.options.getInteger('cantidad');
     if (cant > player.dineroSucio) {
-      return interaction.reply({ embeds: [E.err('Fondos insuficientes', `Solo tienes ${formatMoney(player.dineroSucio)} en dinero sucio.`)], ephemeral: true });
+      return interaction.reply({ embeds: [E.err('Fondos insuficientes', `Solo tienes ${formatMoney(player.dineroSucio)} en dinero sucio.`)], flags: 64 });
     }
 
     const comision = Math.floor(cant * config.economia.impuestoBlanqueo);

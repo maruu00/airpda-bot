@@ -106,7 +106,7 @@ async function execute(interaction, client) {
   const player = await getPlayer(interaction.user.id, interaction.user.username);
 
   if (!player.personajeCreado) {
-    return interaction.reply({ embeds: [E.err('Sin personaje', 'Necesitas un personaje.')], ephemeral: true });
+    return interaction.reply({ embeds: [E.err('Sin personaje', 'Necesitas un personaje.')], flags: 64 });
   }
 
   // ── REPARAR ────────────────────────────────────────────────────────────────
@@ -207,7 +207,7 @@ async function execute(interaction, client) {
 
   // ── PAGAR FACTURA ──────────────────────────────────────────────────────────
   if (cmd === 'pagar-factura') {
-    await interaction.deferReply({ ephemeral: true });
+    await interaction.deferReply({ flags: 64 });
     const factId = interaction.options.getString('id').toUpperCase();
     const res = await pagarFacturaInternal(factId, interaction.user, interaction.guildId);
     if (!res.ok) return interaction.editReply({ embeds: [E.err('Error', res.error)] });
@@ -224,7 +224,7 @@ async function execute(interaction, client) {
 
   // ── FACTURA-LISTA ─────────────────────────────────────────────────────────
   if (cmd === 'factura-lista') {
-    await interaction.deferReply({ ephemeral: true });
+    await interaction.deferReply({ flags: 64 });
     const targetUser = interaction.options.getUser('usuario') || interaction.user;
     const targetId = targetUser.id;
     const targetPlayer = await getPlayer(targetId, targetUser.username);
@@ -361,7 +361,7 @@ async function execute(interaction, client) {
 async function handleFacturaButton(interaction, client) {
   if (!interaction.customId.startsWith('factura_pagar_')) return false;
   const facturaId = interaction.customId.replace('factura_pagar_', '');
-  await interaction.deferReply({ ephemeral: true });
+  await interaction.deferReply({ flags: 64 });
   const res = await pagarFacturaInternal(facturaId, interaction.user, interaction.guildId);
   if (!res.ok) {
     await interaction.editReply({ embeds: [E.err('Error', res.error)] });

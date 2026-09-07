@@ -81,7 +81,7 @@ async function execute(interaction, client) {
     const target = interaction.options.getUser('usuario');
     const viewingOther = target && target.id !== interaction.user.id;
     if (viewingOther && !isAdminInv(interaction.member)) {
-      return interaction.reply({ embeds: [E.err('Sin permiso', 'Solo los admins pueden ver el inventario de otros.')], ephemeral: true });
+      return interaction.reply({ embeds: [E.err('Sin permiso', 'Solo los admins pueden ver el inventario de otros.')], flags: 64 });
     }
     try { await interaction.deferReply({ ephemeral: viewingOther }); } catch {}
     const uid = target?.id || interaction.user.id;
@@ -113,8 +113,8 @@ async function execute(interaction, client) {
     const inv = await getInventory(interaction.user.id);
     const nombre = interaction.options.getString('item').toLowerCase();
     const item = inv.items.find(i => i.nombre.toLowerCase() === nombre);
-    if (!item) return interaction.reply({ embeds: [E.err('Item no encontrado', `No tienes "${nombre}" en el inventario.`)], ephemeral: true });
-    if (!item.equipable) return interaction.reply({ embeds: [E.warn('No equipable', `**${item.nombre}** no es un item equipable.`)], ephemeral: true });
+    if (!item) return interaction.reply({ embeds: [E.err('Item no encontrado', `No tienes "${nombre}" en el inventario.`)], flags: 64 });
+    if (!item.equipable) return interaction.reply({ embeds: [E.warn('No equipable', `**${item.nombre}** no es un item equipable.`)], flags: 64 });
     item.equipado = true;
     await inv.save();
     return interaction.reply({ embeds: [E.ok('Equipado', `${item.emoji || '📦'} **${item.nombre}** equipado.`)] });
@@ -124,7 +124,7 @@ async function execute(interaction, client) {
     const inv = await getInventory(interaction.user.id);
     const nombre = interaction.options.getString('item').toLowerCase();
     const item = inv.items.find(i => i.nombre.toLowerCase() === nombre);
-    if (!item) return interaction.reply({ embeds: [E.err('Item no encontrado', `No tienes "${nombre}" en el inventario.`)], ephemeral: true });
+    if (!item) return interaction.reply({ embeds: [E.err('Item no encontrado', `No tienes "${nombre}" en el inventario.`)], flags: 64 });
     item.equipado = false;
     await inv.save();
     return interaction.reply({ embeds: [E.ok('Desequipado', `${item.emoji || '📦'} **${item.nombre}** desequipado.`)] });
@@ -133,7 +133,7 @@ async function execute(interaction, client) {
   if (cmd === 'usar') {
     const inv    = await getInventory(interaction.user.id);
     const player = await getPlayer(interaction.user.id, interaction.user.username);
-    if (!player.personajeCreado) return interaction.reply({ embeds: [E.warn('Sin personaje', 'Crea tu personaje primero.')], ephemeral: true });
+    if (!player.personajeCreado) return interaction.reply({ embeds: [E.warn('Sin personaje', 'Crea tu personaje primero.')], flags: 64 });
 
     const query = interaction.options.getString('item').toLowerCase();
     const item  = inv.items.find(i =>
@@ -141,11 +141,11 @@ async function execute(interaction, client) {
       i.nombre?.toLowerCase() === query ||
       i.nombre?.toLowerCase().includes(query),
     );
-    if (!item) return interaction.reply({ embeds: [E.err('Item no encontrado', `No tienes "${query}" en el inventario.\nUsa \`/inventario\` para ver tus items.`)], ephemeral: true });
+    if (!item) return interaction.reply({ embeds: [E.err('Item no encontrado', `No tienes "${query}" en el inventario.\nUsa \`/inventario\` para ver tus items.`)], flags: 64 });
 
     const tiposConsumibles = ['comida', 'bebida', 'medkit', 'medicina'];
     if (!tiposConsumibles.includes(item.tipo)) {
-      return interaction.reply({ embeds: [E.warn('No consumible', `**${item.nombre}** no es consumible aquí.\nEquipables: usa \`/equipar ${item.nombre}\`.`)], ephemeral: true });
+      return interaction.reply({ embeds: [E.warn('No consumible', `**${item.nombre}** no es consumible aquí.\nEquipables: usa \`/equipar ${item.nombre}\`.`)], flags: 64 });
     }
 
     function barra(v, len = 10) {
@@ -170,7 +170,7 @@ async function execute(interaction, client) {
       cambios.push(`*${player.getFullName()} consume ${item.nombre}...*`);
       color = config.colors.purple;
     }
-    if (!cambios.length) return interaction.reply({ embeds: [E.warn('Sin efecto', 'Este item no tiene efectos aplicables.')], ephemeral: true });
+    if (!cambios.length) return interaction.reply({ embeds: [E.warn('Sin efecto', 'Este item no tiene efectos aplicables.')], flags: 64 });
 
     const itemId = item.id || item.nombre;
     inv.removeItem(itemId, 1);
@@ -197,8 +197,8 @@ async function execute(interaction, client) {
     const nombre = interaction.options.getString('item').toLowerCase();
     const cantidad = interaction.options.getInteger('cantidad') || 1;
     const item = inv.items.find(i => i.nombre.toLowerCase() === nombre);
-    if (!item) return interaction.reply({ embeds: [E.err('Item no encontrado', `No tienes "${nombre}".`)], ephemeral: true });
-    if (cantidad > item.cantidad) return interaction.reply({ embeds: [E.err('Cantidad insuficiente', `Solo tienes ${item.cantidad}x ${item.nombre}.`)], ephemeral: true });
+    if (!item) return interaction.reply({ embeds: [E.err('Item no encontrado', `No tienes "${nombre}".`)], flags: 64 });
+    if (cantidad > item.cantidad) return interaction.reply({ embeds: [E.err('Cantidad insuficiente', `Solo tienes ${item.cantidad}x ${item.nombre}.`)], flags: 64 });
     inv.removeItem(item.nombre, cantidad);
     await inv.save();
     return interaction.reply({ embeds: [E.ok('Item tirado', `🗑️ Tiraste **${cantidad}x ${item.nombre}** al suelo.`)] });
@@ -211,11 +211,11 @@ async function execute(interaction, client) {
     const cantidad = interaction.options.getInteger('cantidad') || 1;
 
     const item = inv.items.find(i => i.nombre.toLowerCase() === nombre);
-    if (!item) return interaction.reply({ embeds: [E.err('Item no encontrado', `No tienes "${nombre}".`)], ephemeral: true });
-    if (cantidad > item.cantidad) return interaction.reply({ embeds: [E.err('Cantidad insuficiente', `Solo tienes ${item.cantidad}x.`)], ephemeral: true });
+    if (!item) return interaction.reply({ embeds: [E.err('Item no encontrado', `No tienes "${nombre}".`)], flags: 64 });
+    if (cantidad > item.cantidad) return interaction.reply({ embeds: [E.err('Cantidad insuficiente', `Solo tienes ${item.cantidad}x.`)], flags: 64 });
 
     const targetInv = await getInventory(target.id);
-    if (targetInv.countItems() >= targetInv.capacidadMax) return interaction.reply({ embeds: [E.err('Inventario lleno', 'El inventario del otro jugador está lleno.')], ephemeral: true });
+    if (targetInv.countItems() >= targetInv.capacidadMax) return interaction.reply({ embeds: [E.err('Inventario lleno', 'El inventario del otro jugador está lleno.')], flags: 64 });
 
     inv.removeItem(item.nombre, cantidad);
     targetInv.addItem({ nombre: item.nombre, tipo: item.tipo, emoji: item.emoji, cantidad, equipable: item.equipable, precio: item.precio, efecto: item.efecto });

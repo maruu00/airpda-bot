@@ -45,9 +45,9 @@ async function execute(interaction) {
 
   if (sub === 'lista') {
     if (!requireBadge(interaction.member, [config.roles.policia, config.roles.sheriff])) {
-      return interaction.reply({ embeds: [E.err('Sin autorización', 'Solo el personal policial puede gestionar investigaciones.')], ephemeral: true });
+      return interaction.reply({ embeds: [E.err('Sin autorización', 'Solo el personal policial puede gestionar investigaciones.')], flags: 64 });
     }
-    await interaction.deferReply({ ephemeral: true });
+    await interaction.deferReply({ flags: 64 });
 
     const investigs = await pdaApi.getInvestigaciones().catch(() => []);
     if (!investigs.length) {
@@ -73,9 +73,9 @@ async function execute(interaction) {
 
   if (sub === 'crear') {
     if (!requireBadge(interaction.member, [config.roles.policia, config.roles.sheriff])) {
-      return interaction.reply({ embeds: [E.err('Sin autorización', 'Solo el personal policial puede gestionar investigaciones.')], ephemeral: true });
+      return interaction.reply({ embeds: [E.err('Sin autorización', 'Solo el personal policial puede gestionar investigaciones.')], flags: 64 });
     }
-    await interaction.deferReply({ ephemeral: true });
+    await interaction.deferReply({ flags: 64 });
 
     const titulo        = interaction.options.getString('titulo');
     const descripcion   = interaction.options.getString('descripcion');
@@ -135,9 +135,9 @@ async function execute(interaction) {
 
   if (sub === 'actualizar') {
     if (!requireBadge(interaction.member, [config.roles.policia, config.roles.sheriff])) {
-      return interaction.reply({ embeds: [E.err('Sin autorización', 'Solo el personal policial puede gestionar investigaciones.')], ephemeral: true });
+      return interaction.reply({ embeds: [E.err('Sin autorización', 'Solo el personal policial puede gestionar investigaciones.')], flags: 64 });
     }
-    await interaction.deferReply({ ephemeral: true });
+    await interaction.deferReply({ flags: 64 });
 
     const id     = interaction.options.getString('id');
     const estado = interaction.options.getString('estado');

@@ -23,7 +23,7 @@ const data = [
 async function execute(interaction) {
   const cmd = interaction.commandName;
   const guildId = interaction.guildId;
-  if (!isStaff(interaction.member)) return interaction.reply({ content: '❌ Solo staff.', ephemeral: true });
+  if (!isStaff(interaction.member)) return interaction.reply({ content: '❌ Solo staff.', flags: 64 });
 
   if (cmd === 'banco-estado') {
     const banco = await BancoEstado.findOne({ guildId }) || { saldo: 0, totalRecaudado: 0, ultimaRecaudacion: null };
@@ -34,7 +34,7 @@ async function execute(interaction) {
         { name: '⏰ Última', value: banco.ultimaRecaudacion ? `<t:${Math.floor(new Date(banco.ultimaRecaudacion).getTime()/1000)}:R>` : 'Nunca', inline: true },
         { name: 'ℹ️ Regla', value: 'Cada 168h (7d) se quita el 2% a todos con ≥10k (cash+banco). Exentos <10k.', inline: false },
       ).setTimestamp();
-    return interaction.reply({ embeds: [embed], ephemeral: true });
+    return interaction.reply({ embeds: [embed], flags: 64 });
   }
 
   if (cmd === 'ingresar-estado') {
@@ -49,7 +49,7 @@ async function execute(interaction) {
     const target = interaction.options.getUser('usuario') || interaction.user;
     const motivo = interaction.options.getString('motivo') || 'Retiro Banco Estado';
     const banco = await BancoEstado.findOne({ guildId });
-    if (!banco || (banco.saldo || 0) < cantidad) return interaction.reply({ content: `❌ Fondos insuficientes en el Banco del Estado. Saldo: ${formatMoney(banco?.saldo||0)}`, ephemeral: true });
+    if (!banco || (banco.saldo || 0) < cantidad) return interaction.reply({ content: `❌ Fondos insuficientes en el Banco del Estado. Saldo: ${formatMoney(banco?.saldo||0)}`, flags: 64 });
     banco.saldo -= cantidad;
     await banco.save();
     const player = await Player.findOne({ discordId: target.id });
@@ -66,7 +66,7 @@ async function execute(interaction) {
   }
 
   if (cmd === 'recaudar-estado') {
-    await interaction.deferReply({ ephemeral: true });
+    await interaction.deferReply({ flags: 64 });
     const { ejecutarRecaudacion } = require('../systems/bancoEstado');
     const res = await ejecutarRecaudacion(interaction.guild, `Forzado por ${interaction.user.tag}`);
     return interaction.editReply({ embeds: [new EmbedBuilder().setColor(0xf59e0b).setTitle('🏦 Recaudación forzada').setDescription(`Recaudado: ${formatMoney(res.recaudado)}\nAfectados: ${res.afectados} · Exentos: ${res.exentos}\nSaldo Estado: ${formatMoney(res.saldo)}`)] });

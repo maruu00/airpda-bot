@@ -514,7 +514,7 @@ async function execute(interaction) {
     components = [buildSelectMenu()];
   }
 
-  await interaction.reply({ embeds, components, ephemeral: true });
+  await interaction.reply({ embeds, components, flags: 64 });
   const response = await interaction.fetchReply();
   attachHelpCollector(response, interaction.guild, interaction.user.id, catIdx);
 }

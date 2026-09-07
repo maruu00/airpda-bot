@@ -76,7 +76,7 @@ async function execute(interaction, client) {
   const sub = interaction.options.getSubcommand();
 
   if (!interaction.member.permissions.has(PermissionFlagsBits.Administrator)) {
-    return interaction.reply({ embeds: [E.err('Sin permisos', 'Solo los administradores pueden usar estos comandos.')], ephemeral: true });
+    return interaction.reply({ embeds: [E.err('Sin permisos', 'Solo los administradores pueden usar estos comandos.')], flags: 64 });
   }
 
   const gc = await GuildConfig.findOne({ guildId: interaction.guildId }) || await GuildConfig.create({ guildId: interaction.guildId });
@@ -212,7 +212,7 @@ async function execute(interaction, client) {
       player.addXP(cantidad);
     } else if (tipo === 'item') {
       const itemNombre = interaction.options.getString('item');
-      if (!itemNombre) return interaction.reply({ embeds: [E.err('Falta item', 'Especifica el nombre del item.')], ephemeral: true });
+      if (!itemNombre) return interaction.reply({ embeds: [E.err('Falta item', 'Especifica el nombre del item.')], flags: 64 });
       const inv = await getInventory(target.id);
       inv.addItem({ nombre: itemNombre, tipo: 'objeto', emoji: '📦', cantidad, precio: 0 });
       await inv.save();
@@ -277,7 +277,7 @@ async function execute(interaction, client) {
       return interaction.reply({ embeds: [E.ok('Configurado', msg)] });
     }
 
-    return interaction.reply({ embeds: [E.err('Clave inválida', `"${clave}" no es una configuración válida.`)], ephemeral: true });
+    return interaction.reply({ embeds: [E.err('Clave inválida', `"${clave}" no es una configuración válida.`)], flags: 64 });
   }
 
   // ── RESET ───────────────────────────────────────────────────────────────────
@@ -350,7 +350,7 @@ async function execute(interaction, client) {
     const target = interaction.options.getUser('usuario');
     const estado = interaction.options.getBoolean('estado');
     const player = await getPlayer(target.id, target.username);
-    if (!player.personajeCreado) return interaction.reply({ embeds: [E.err('Sin personaje', 'Ese jugador no tiene personaje.')], ephemeral: true });
+    if (!player.personajeCreado) return interaction.reply({ embeds: [E.err('Sin personaje', 'Ese jugador no tiene personaje.')], flags: 64 });
 
     player.buscado = estado;
     await player.save();
@@ -368,7 +368,7 @@ async function execute(interaction, client) {
     const target = interaction.options.getUser('usuario');
     const tiempo = interaction.options.getInteger('tiempo');
     const player = await getPlayer(target.id, target.username);
-    if (!player.personajeCreado) return interaction.reply({ embeds: [E.err('Sin personaje', 'Ese jugador no tiene personaje.')], ephemeral: true });
+    if (!player.personajeCreado) return interaction.reply({ embeds: [E.err('Sin personaje', 'Ese jugador no tiene personaje.')], flags: 64 });
 
     player.enHospital = true; // Encarcelado (usamos mismo sistema que hospital)
     player.tiempoHospital = new Date(Date.now() + tiempo * 60 * 1000);

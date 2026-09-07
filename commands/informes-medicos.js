@@ -60,9 +60,9 @@ async function execute(interaction) {
   if (cmd === 'informe-paciente') {
     if (sub === 'crear') {
       if (!requireBadge(interaction.member, [config.roles.policia, config.roles.sheriff, config.roles.bombero])) {
-        return interaction.reply({ embeds: [E.err('Sin autorización', 'Solo el personal policial/bombero puede usar estos comandos.')], ephemeral: true });
+        return interaction.reply({ embeds: [E.err('Sin autorización', 'Solo el personal policial/bombero puede usar estos comandos.')], flags: 64 });
       }
-      await interaction.deferReply({ ephemeral: true });
+      await interaction.deferReply({ flags: 64 });
 
       const paciente    = interaction.options.getString('paciente');
       const incidente   = interaction.options.getString('incidente');
@@ -106,9 +106,9 @@ async function execute(interaction) {
 
     if (sub === 'lista') {
       if (!requireBadge(interaction.member, [config.roles.policia, config.roles.sheriff, config.roles.bombero])) {
-        return interaction.reply({ embeds: [E.err('Sin autorización', 'Solo el personal policial/bombero puede usar estos comandos.')], ephemeral: true });
+        return interaction.reply({ embeds: [E.err('Sin autorización', 'Solo el personal policial/bombero puede usar estos comandos.')], flags: 64 });
       }
-      await interaction.deferReply({ ephemeral: true });
+      await interaction.deferReply({ flags: 64 });
 
       const informes = await pdaApi.getInformesPacientes().catch(() => []);
       if (!informes.length) return interaction.editReply({ embeds: [E.info('Sin informes', 'No hay informes de pacientes registrados.')] });
@@ -135,9 +135,9 @@ async function execute(interaction) {
   if (cmd === 'informe-personal') {
     if (sub === 'crear') {
       if (!requireBadge(interaction.member, [config.roles.policia, config.roles.sheriff, config.roles.bombero])) {
-        return interaction.reply({ embeds: [E.err('Sin autorización', 'Solo el personal policial/bombero puede usar estos comandos.')], ephemeral: true });
+        return interaction.reply({ embeds: [E.err('Sin autorización', 'Solo el personal policial/bombero puede usar estos comandos.')], flags: 64 });
       }
-      await interaction.deferReply({ ephemeral: true });
+      await interaction.deferReply({ flags: 64 });
 
       const titulo      = interaction.options.getString('titulo');
       const descripcion = interaction.options.getString('descripcion');
@@ -163,9 +163,9 @@ async function execute(interaction) {
 
     if (sub === 'lista') {
       if (!requireBadge(interaction.member, [config.roles.policia, config.roles.sheriff, config.roles.bombero])) {
-        return interaction.reply({ embeds: [E.err('Sin autorización', 'Solo el personal policial/bombero puede usar estos comandos.')], ephemeral: true });
+        return interaction.reply({ embeds: [E.err('Sin autorización', 'Solo el personal policial/bombero puede usar estos comandos.')], flags: 64 });
       }
-      await interaction.deferReply({ ephemeral: true });
+      await interaction.deferReply({ flags: 64 });
 
       const todos = interaction.options.getBoolean('todos') && interaction.member.permissions.has('Administrator');
       const agenteId = todos ? null : interaction.user.id;

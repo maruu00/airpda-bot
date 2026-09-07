@@ -45,7 +45,7 @@ const data = new (require('discord.js').SlashCommandBuilder)()
 async function execute(interaction, client) {
   const sub = interaction.options.getSubcommand();
   const player = await getPlayer(interaction.user.id, interaction.user.username);
-  if (!player.personajeCreado) return interaction.reply({ embeds: [E.warn('Sin personaje', 'Crea un personaje con /personaje crear.')], ephemeral: true });
+  if (!player.personajeCreado) return interaction.reply({ embeds: [E.warn('Sin personaje', 'Crea un personaje con /personaje crear.')], flags: 64 });
 
   if (sub === 'tipos') {
     const desc = Object.entries(DROGAS).map(([k, v]) =>
@@ -54,32 +54,32 @@ async function execute(interaction, client) {
     return interaction.reply({
       embeds: [new EmbedBuilder().setColor(config.colors.primary).setTitle('💊 Tipos de Droga')
         .setDescription(desc).setFooter({ text: 'Usa /drogas plantar [tipo] para comenzar' }).setTimestamp()],
-      ephemeral: true,
+      flags: 64,
     });
   }
 
   if (sub === 'plantar') {
     const tipo = interaction.options.getString('tipo');
     const info = getTipoInfo(tipo);
-    if (!info) return interaction.reply({ embeds: [E.err('Error', 'Tipo de droga inválido.')], ephemeral: true });
+    if (!info) return interaction.reply({ embeds: [E.err('Error', 'Tipo de droga inválido.')], flags: 64 });
 
     // Verificar nivel de banda
     const Gang = require('../database/models/Gang');
     const ganga = player.gangId ? await Gang.findById(player.gangId).catch(() => null) : null;
     const nivelBanda = ganga?.nivel || 0;
     if (nivelBanda < info.nivelBanda) {
-      return interaction.reply({ embeds: [E.err('Nivel de banda insuficiente', `Necesitas nivel de banda **${info.nivelBanda}** para plantar ${info.nombre}. Tu banda tiene nivel **${nivelBanda}**.`)], ephemeral: true });
+      return interaction.reply({ embeds: [E.err('Nivel de banda insuficiente', `Necesitas nivel de banda **${info.nivelBanda}** para plantar ${info.nombre}. Tu banda tiene nivel **${nivelBanda}**.`)], flags: 64 });
     }
 
     const activeCount = await DrugPlot.countDocuments({ discordId: interaction.user.id, fase: 'creciendo' });
-    if (activeCount >= 5) return interaction.reply({ embeds: [E.warn('Límite alcanzado', 'Máximo **5** plantaciones activas a la vez.')], ephemeral: true });
+    if (activeCount >= 5) return interaction.reply({ embeds: [E.warn('Límite alcanzado', 'Máximo **5** plantaciones activas a la vez.')], flags: 64 });
 
     // Verificar semilla en inventario
     const inv = await getInventory(interaction.user.id);
     const seedId = `semilla_${tipo}`;
     const semilla = inv.items.find(i => i.id === seedId);
     if (!semilla || semilla.cantidad < 1) {
-      return interaction.reply({ embeds: [E.err('Sin semillas', `Necesitas una **semilla de ${info.nombre}** para plantar. Cómprala en \`/tienda\` (🏴 Mercado Negro).`)], ephemeral: true });
+      return interaction.reply({ embeds: [E.err('Sin semillas', `Necesitas una **semilla de ${info.nombre}** para plantar. Cómprala en \`/tienda\` (🏴 Mercado Negro).`)], flags: 64 });
     }
     inv.removeItem(seedId, 1);
     await inv.save();
@@ -117,7 +117,7 @@ async function execute(interaction, client) {
 
   if (sub === 'plantaciones') {
     const plots = await DrugPlot.find({ discordId: interaction.user.id }).sort({ plantadoEn: -1 });
-    if (!plots.length) return interaction.reply({ embeds: [E.warn('Sin plantaciones', 'No tienes plantaciones activas.')], ephemeral: true });
+    if (!plots.length) return interaction.reply({ embeds: [E.warn('Sin plantaciones', 'No tienes plantaciones activas.')], flags: 64 });
 
     const list = await Promise.all(plots.map(async p => {
       const info = getTipoInfo(p.tipo);
@@ -130,13 +130,13 @@ async function execute(interaction, client) {
     return interaction.reply({
       embeds: [new EmbedBuilder().setColor(config.colors.primary).setTitle('🌱 Tus Plantaciones')
         .setDescription(list.join('\n\n') || '*Sin plantaciones*').setFooter({ text: `Total: ${plots.length} plantaciones` }).setTimestamp()],
-      ephemeral: true,
+      flags: 64,
     });
   }
 
   if (sub === 'regar') {
     const plots = await DrugPlot.find({ discordId: interaction.user.id, fase: 'creciendo', riegosRealizados: { $lt: 10 } });
-    if (!plots.length) return interaction.reply({ embeds: [E.warn('Sin plantas', 'No tienes plantas que necesiten riego.')], ephemeral: true });
+    if (!plots.length) return interaction.reply({ embeds: [E.warn('Sin plantas', 'No tienes plantas que necesiten riego.')], flags: 64 });
 
     let regadas = 0;
     for (const p of plots) {
@@ -149,12 +149,12 @@ async function execute(interaction, client) {
         regadas++;
       }
     }
-    return interaction.reply({ content: `💧 **${regadas}** plantas regadas correctamente.`, ephemeral: true });
+    return interaction.reply({ content: `💧 **${regadas}** plantas regadas correctamente.`, flags: 64 });
   }
 
   if (sub === 'cosechar') {
     const ready = await DrugPlot.find({ discordId: interaction.user.id, fase: 'listo' });
-    if (!ready.length) return interaction.reply({ embeds: [E.warn('Sin cosecha', 'No tienes plantas listas para cosechar. Usa /drogas plantaciones para ver el estado.')], ephemeral: true });
+    if (!ready.length) return interaction.reply({ embeds: [E.warn('Sin cosecha', 'No tienes plantas listas para cosechar. Usa /drogas plantaciones para ver el estado.')], flags: 64 });
 
     let total = 0;
     let perdidas = 0;
@@ -206,15 +206,15 @@ async function execute(interaction, client) {
           { name: '🚔 Arrestos', value: `${player.arrestos || 0}`, inline: true },
           { name: '🏴 Nivel de banda', value: `${player.gangId ? 'Activo' : 'Sin banda'}`, inline: true },
         ).setTimestamp()],
-      ephemeral: true,
+      flags: 64,
     });
   }
 
   if (sub === 'vender') {
     const inv = await getInventory(interaction.user.id);
     const drugs = inv.items.filter(i => i.tipo === 'droga');
-    if (!drugs.length) return interaction.reply({ embeds: [E.warn('Sin drogas', 'No tienes drogas en el inventario.')], ephemeral: true });
-    await interaction.deferReply({ ephemeral: true });
+    if (!drugs.length) return interaction.reply({ embeds: [E.warn('Sin drogas', 'No tienes drogas en el inventario.')], flags: 64 });
+    await interaction.deferReply({ flags: 64 });
     return iniciarVenta(interaction, interaction.user, player, inv, client);
   }
 
@@ -234,27 +234,27 @@ async function execute(interaction, client) {
             tienePiezas.map(p => `${p.tiene ? '✅' : '❌'} ${p.id}`).join('\n') +
             `\n\nUsa \`/drogas laboratorio montar\` si tienes todas las piezas.`
           ).setTimestamp()],
-        ephemeral: true,
+        flags: 64,
       });
     }
 
     if (accion === 'montar') {
       const piezas = ['reactor', 'condensador', 'tubos', 'quimicos'];
       const tieneTodo = piezas.every(p => inv.items.some(i => i.id === p));
-      if (!tieneTodo) return interaction.reply({ embeds: [E.err('Faltan piezas', 'Necesitas: reactor, condensador, tubos de ensayo y químicos. Cómpralos en la tienda.')], ephemeral: true });
+      if (!tieneTodo) return interaction.reply({ embeds: [E.err('Faltan piezas', 'Necesitas: reactor, condensador, tubos de ensayo y químicos. Cómpralos en la tienda.')], flags: 64 });
       piezas.forEach(p => inv.removeItem(p));
       inv.addItem({ id: 'laboratorio', nombre: 'Laboratorio montado', tipo: 'herramienta', emoji: '🔬', precio: 0 });
       await inv.save();
       // Marcar todas las plantaciones activas con conLab
       await DrugPlot.updateMany({ discordId: interaction.user.id }, { conLab: true });
-      return interaction.reply({ embeds: [E.ok('🔬 Laboratorio montado', 'Todas tus nuevas plantaciones podrán procesarse en laboratorio para obtener droga pura (+50% valor).')], ephemeral: true });
+      return interaction.reply({ embeds: [E.ok('🔬 Laboratorio montado', 'Todas tus nuevas plantaciones podrán procesarse en laboratorio para obtener droga pura (+50% valor).')], flags: 64 });
     }
 
     if (accion === 'procesar') {
       const tieneLab = inv.items.some(i => i.id === 'laboratorio');
-      if (!tieneLab) return interaction.reply({ embeds: [E.err('Sin laboratorio', 'Necesitas montar un laboratorio primero con /drogas laboratorio montar.')], ephemeral: true });
+      if (!tieneLab) return interaction.reply({ embeds: [E.err('Sin laboratorio', 'Necesitas montar un laboratorio primero con /drogas laboratorio montar.')], flags: 64 });
       const normales = inv.items.filter(i => i.tipo === 'droga' && !i.id.endsWith('_pura'));
-      if (!normales.length) return interaction.reply({ embeds: [E.warn('Sin drogas', 'No tienes drogas para procesar.')], ephemeral: true });
+      if (!normales.length) return interaction.reply({ embeds: [E.warn('Sin drogas', 'No tienes drogas para procesar.')], flags: 64 });
       let procesadas = 0;
       for (const d of normales) {
         inv.removeItem(d.id, d.cantidad);
@@ -264,7 +264,7 @@ async function execute(interaction, client) {
         procesadas += d.cantidad;
       }
       await inv.save();
-      return interaction.reply({ embeds: [E.ok('🧪 Procesadas', `**${procesadas}** unidades procesadas en laboratorio. Valor aumentado un **50%**.`)], ephemeral: true });
+      return interaction.reply({ embeds: [E.ok('🧪 Procesadas', `**${procesadas}** unidades procesadas en laboratorio. Valor aumentado un **50%**.`)], flags: 64 });
     }
   }
 }
@@ -435,7 +435,7 @@ async function iniciarVenta(responder, usuario, player, inv, client) {
   if (!canal) return responder.editReply('❌ Error al obtener el canal.');
 
   const filter = m => m.author.id === usuario.id;
-  let msg = await responder.editReply({ content: preguntas[0].q, ephemeral: true });
+  let msg = await responder.editReply({ content: preguntas[0].q, flags: 64 });
   if (!msg) return;
 
   for (let i = 0; i < preguntas.length; i++) {

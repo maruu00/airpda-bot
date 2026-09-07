@@ -38,14 +38,14 @@ const data = new SlashCommandBuilder()
 
 async function execute(interaction, client) {
   const player = await getPlayer(interaction.user.id, interaction.user.username);
-  if (!player.personajeCreado) return interaction.reply({ embeds: [E.warn('Sin personaje', 'Crea un personaje primero.')], ephemeral: true });
+  if (!player.personajeCreado) return interaction.reply({ embeds: [E.warn('Sin personaje', 'Crea un personaje primero.')], flags: 64 });
 
   const sub = interaction.options.getSubcommand();
 
   // ─── COMPRAR FICHAS ─────────────────────────────────────────────────────
   if (sub === 'comprar') {
     const cantidad = interaction.options.getInteger('cantidad');
-    if (player.cash < cantidad) return interaction.reply({ embeds: [E.err('Fondos insuficientes', `Necesitas **${formatMoney(cantidad)}** en efectivo. Tienes: ${formatMoney(player.cash)}`)], ephemeral: true });
+    if (player.cash < cantidad) return interaction.reply({ embeds: [E.err('Fondos insuficientes', `Necesitas **${formatMoney(cantidad)}** en efectivo. Tienes: ${formatMoney(player.cash)}`)], flags: 64 });
     player.cash -= cantidad;
     player.fichas = (player.fichas || 0) + cantidad;
     await player.save();
@@ -56,7 +56,7 @@ async function execute(interaction, client) {
   if (sub === 'retirar') {
     const cantidad = interaction.options.getInteger('cantidad');
     const fichas = player.fichas || 0;
-    if (fichas < cantidad) return interaction.reply({ embeds: [E.err('Fichas insuficientes', `Tienes **${fichas.toLocaleString()}** fichas.`)], ephemeral: true });
+    if (fichas < cantidad) return interaction.reply({ embeds: [E.err('Fichas insuficientes', `Tienes **${fichas.toLocaleString()}** fichas.`)], flags: 64 });
     player.fichas = fichas - cantidad;
     player.cash += cantidad;
     await player.save();
@@ -68,7 +68,7 @@ async function execute(interaction, client) {
     const last = player.getCooldown('casino_daily');
     if (last && Date.now() - last.getTime() < 86400000) {
       const r = 86400000 - (Date.now() - last.getTime());
-      return interaction.reply({ embeds: [E.warn('Ya reclamaste', `Vuelve en **${Math.floor(r/3600000)}h ${Math.floor((r%3600000)/60000)}m**.`)], ephemeral: true });
+      return interaction.reply({ embeds: [E.warn('Ya reclamaste', `Vuelve en **${Math.floor(r/3600000)}h ${Math.floor((r%3600000)/60000)}m**.`)], flags: 64 });
     }
 
     // Racha de días
@@ -131,14 +131,14 @@ async function execute(interaction, client) {
           `💰 Compra fichas con \`/casino comprar [cantidad]\`\n` +
           `💵 Efectivo disponible: ${formatMoney(player.cash)}`
         ).setTimestamp()],
-      ephemeral: true,
+      flags: 64,
     });
   }
 
   const cooldownKey = 'casino_global';
   const lastGame = player.getCooldown(cooldownKey);
   if (lastGame && Date.now() - lastGame.getTime() < 5000) {
-    return interaction.reply({ embeds: [E.warn('Cooldown', 'Espera **5 segundos** entre juegos.')], ephemeral: true });
+    return interaction.reply({ embeds: [E.warn('Cooldown', 'Espera **5 segundos** entre juegos.')], flags: 64 });
   }
   player.setCooldown(cooldownKey, new Date());
 

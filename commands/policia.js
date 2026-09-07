@@ -155,7 +155,7 @@ async function execute(interaction, client) {
   // ── ESPOSAR ─────────────────────────────────────────────────────────────────
   if (cmd === 'esposar') {
     if (!(await esPolicía(interaction, gc))) {
-      return interaction.reply({ embeds: [E.err('Sin permisos', 'Solo el personal policial puede usar este comando.')], ephemeral: true });
+      return interaction.reply({ embeds: [E.err('Sin permisos', 'Solo el personal policial puede usar este comando.')], flags: 64 });
     }
     const target = interaction.options.getUser('usuario');
     const motivo = interaction.options.getString('motivo') || 'Sin motivo especificado';
@@ -163,7 +163,7 @@ async function execute(interaction, client) {
     const ciudadano = await getPlayer(target.id, target.username);
 
     if (ciudadano.esposado) {
-      return interaction.reply({ embeds: [E.warn('Ya esposado', `${ciudadano.getFullName()} ya está esposado.`)], ephemeral: true });
+      return interaction.reply({ embeds: [E.warn('Ya esposado', `${ciudadano.getFullName()} ya está esposado.`)], flags: 64 });
     }
 
     ciudadano.esposado = true;
@@ -208,7 +208,7 @@ async function execute(interaction, client) {
   // ── DESESPOSAR ──────────────────────────────────────────────────────────────
   if (cmd === 'desesposar') {
     if (!(await esPolicía(interaction, gc))) {
-      return interaction.reply({ embeds: [E.err('Sin permisos', 'Solo el personal policial puede usar este comando.')], ephemeral: true });
+      return interaction.reply({ embeds: [E.err('Sin permisos', 'Solo el personal policial puede usar este comando.')], flags: 64 });
     }
     const target = interaction.options.getUser('usuario');
     const ciudadano = await getPlayer(target.id, target.username);
@@ -231,7 +231,7 @@ async function execute(interaction, client) {
   // ── MULTAR ──────────────────────────────────────────────────────────────────
   if (cmd === 'multar') {
     if (!(await esPolicía(interaction, gc))) {
-      return interaction.reply({ embeds: [E.err('Sin permisos', 'Solo el personal policial puede multar.')], ephemeral: true });
+      return interaction.reply({ embeds: [E.err('Sin permisos', 'Solo el personal policial puede multar.')], flags: 64 });
     }
     await interaction.deferReply();
 
@@ -330,7 +330,7 @@ async function execute(interaction, client) {
     const esPropio = userId === interaction.user.id;
 
     if (!esPropio && !(await esPolicía(interaction, gc))) {
-      return interaction.reply({ embeds: [E.err('Sin permisos', 'Solo los agentes pueden ver multas de otros.')], ephemeral: true });
+      return interaction.reply({ embeds: [E.err('Sin permisos', 'Solo los agentes pueden ver multas de otros.')], flags: 64 });
     }
 
     await interaction.deferReply({ ephemeral: esPropio });
@@ -395,7 +395,7 @@ async function execute(interaction, client) {
 
   // ── PAGAR MULTA ─────────────────────────────────────────────────────────────
   if (cmd === 'pagar-multa') {
-    await interaction.deferReply({ ephemeral: true });
+    await interaction.deferReply({ flags: 64 });
     const multaId = interaction.options.getString('id').toUpperCase();
     const multa = await Multa.findOne({ multaId, ciudadanoId: interaction.user.id, pagada: false });
 
@@ -444,9 +444,9 @@ async function execute(interaction, client) {
   // ── CACHEAR ─────────────────────────────────────────────────────────────────
   if (cmd === 'cachear') {
     if (!(await esPolicía(interaction, gc))) {
-      return interaction.reply({ embeds: [E.err('Sin permisos', 'Solo el personal policial puede cachear.')], ephemeral: true });
+      return interaction.reply({ embeds: [E.err('Sin permisos', 'Solo el personal policial puede cachear.')], flags: 64 });
     }
-    await interaction.deferReply({ ephemeral: true });
+    await interaction.deferReply({ flags: 64 });
 
     const target    = interaction.options.getUser('usuario');
     const ciudadano = await getPlayer(target.id, target.username);
@@ -478,7 +478,7 @@ async function execute(interaction, client) {
   // ── ESCOLTAR ────────────────────────────────────────────────────────────────
   if (cmd === 'escoltar') {
     if (!(await esPolicía(interaction, gc))) {
-      return interaction.reply({ embeds: [E.err('Sin permisos', 'Solo el personal policial puede escoltar.')], ephemeral: true });
+      return interaction.reply({ embeds: [E.err('Sin permisos', 'Solo el personal policial puede escoltar.')], flags: 64 });
     }
     const target    = interaction.options.getUser('usuario');
     const agente    = await getPlayer(interaction.user.id, interaction.user.username);
@@ -501,9 +501,9 @@ async function execute(interaction, client) {
   // ── CREAR PLACA ─────────────────────────────────────────────────────────────
   if (cmd === 'crear-placa') {
     if (!interaction.member.permissions.has(PermissionFlagsBits.Administrator) && !(await esPolicía(interaction, gc))) {
-      return interaction.reply({ embeds: [E.err('Sin permisos', 'Solo admins pueden crear placas.')], ephemeral: true });
+      return interaction.reply({ embeds: [E.err('Sin permisos', 'Solo admins pueden crear placas.')], flags: 64 });
     }
-    await interaction.deferReply({ ephemeral: true });
+    await interaction.deferReply({ flags: 64 });
 
     const target  = interaction.options.getUser('usuario');
     const depto   = interaction.options.getString('departamento');
@@ -539,7 +539,7 @@ async function execute(interaction, client) {
     const placa  = await Placa.findOne({ discordId: target.id, activa: true });
 
     if (!placa) {
-      return interaction.reply({ embeds: [E.err('Sin placa', `<@${target.id}> no tiene placa registrada.`)], ephemeral: true });
+      return interaction.reply({ embeds: [E.err('Sin placa', `<@${target.id}> no tiene placa registrada.`)], flags: 64 });
     }
 
     const deptoColors = { LSPD: 0x003f7f, LSCSD: 0x8b4513, LSCFD: 0xcc0000, IAA: 0x1a1a1a, FIB: 0x003366 };
@@ -564,13 +564,13 @@ async function execute(interaction, client) {
   // ── VER ID ──────────────────────────────────────────────────────────────────
   if (cmd === 'ver-id') {
     if (!(await esPolicía(interaction, gc))) {
-      return interaction.reply({ embeds: [E.err('Sin permisos', 'Solo el personal policial puede verificar IDs.')], ephemeral: true });
+      return interaction.reply({ embeds: [E.err('Sin permisos', 'Solo el personal policial puede verificar IDs.')], flags: 64 });
     }
     const target    = interaction.options.getUser('usuario');
     const ciudadano = await getPlayer(target.id, target.username);
 
     if (!ciudadano.personajeCreado) {
-      return interaction.reply({ embeds: [E.warn('Sin personaje', 'Ese ciudadano no tiene personaje registrado.')], ephemeral: true });
+      return interaction.reply({ embeds: [E.warn('Sin personaje', 'Ese ciudadano no tiene personaje registrado.')], flags: 64 });
     }
 
     // Buscar en PDA si existe
@@ -596,13 +596,13 @@ async function execute(interaction, client) {
       .setFooter({ text: `Verificado por ${interaction.user.username}` })
       .setTimestamp();
 
-    return interaction.reply({ embeds: [embed], ephemeral: true });
+    return interaction.reply({ embeds: [embed], flags: 64 });
   }
 
   // ── VER LICENCIA ────────────────────────────────────────────────────────────
   if (cmd === 'ver-licencia') {
     if (!(await esPolicía(interaction, gc))) {
-      return interaction.reply({ embeds: [E.err('Sin permisos', 'Solo el personal policial puede verificar licencias.')], ephemeral: true });
+      return interaction.reply({ embeds: [E.err('Sin permisos', 'Solo el personal policial puede verificar licencias.')], flags: 64 });
     }
     const target    = interaction.options.getUser('usuario');
     const ciudadano = await getPlayer(target.id, target.username);
@@ -621,13 +621,13 @@ async function execute(interaction, client) {
       .setFooter({ text: `Verificado por ${interaction.user.username}` })
       .setTimestamp();
 
-    return interaction.reply({ embeds: [embed], ephemeral: true });
+    return interaction.reply({ embeds: [embed], flags: 64 });
   }
 
   // ── VER PERMISO ─────────────────────────────────────────────────────────────
   if (cmd === 'ver-permiso') {
     if (!(await esPolicía(interaction, gc))) {
-      return interaction.reply({ embeds: [E.err('Sin permisos', 'Solo el personal policial puede verificar permisos.')], ephemeral: true });
+      return interaction.reply({ embeds: [E.err('Sin permisos', 'Solo el personal policial puede verificar permisos.')], flags: 64 });
     }
     const target    = interaction.options.getUser('usuario');
     const ciudadano = await getPlayer(target.id, target.username);
@@ -649,13 +649,13 @@ async function execute(interaction, client) {
       .setFooter({ text: `Verificado por ${interaction.user.username}` })
       .setTimestamp();
 
-    return interaction.reply({ embeds: [embed], ephemeral: true });
+    return interaction.reply({ embeds: [embed], flags: 64 });
   }
 
   // ── POLI-DISPO ──────────────────────────────────────────────────────────────
   if (cmd === 'poli-dispo') {
     if (!(await esPolicía(interaction, gc))) {
-      return interaction.reply({ embeds: [E.err('Sin permisos', 'Solo el personal policial puede cambiar su disponibilidad.')], ephemeral: true });
+      return interaction.reply({ embeds: [E.err('Sin permisos', 'Solo el personal policial puede cambiar su disponibilidad.')], flags: 64 });
     }
     const estado = interaction.options.getString('estado');
     const agente = await getPlayer(interaction.user.id, interaction.user.username);
@@ -717,7 +717,7 @@ async function execute(interaction, client) {
       [config.roles.bombero, gc2?.roles?.medico].filter(Boolean).some(r => member.roles.cache.has(r));
 
     if (!esMedico) {
-      return interaction.reply({ embeds: [E.err('Sin permisos', 'Solo el personal médico (LSFD/EMT) puede curar.')], ephemeral: true });
+      return interaction.reply({ embeds: [E.err('Sin permisos', 'Solo el personal médico (LSFD/EMT) puede curar.')], flags: 64 });
     }
 
     const target    = interaction.options.getUser('usuario');
@@ -780,8 +780,8 @@ async function execute(interaction, client) {
 
   // ── QUITAR SUCIO (DECOMISAR) — solo último atraco ─────────────────────────
   if (cmd === 'quitar-sucio') {
-    if (!(await esPolicía(interaction, gc))) return interaction.reply({ embeds: [E.err('Sin permisos', 'Solo policías pueden decomisar dinero sucio.')], ephemeral: true });
-    await interaction.deferReply({ ephemeral: true });
+    if (!(await esPolicía(interaction, gc))) return interaction.reply({ embeds: [E.err('Sin permisos', 'Solo policías pueden decomisar dinero sucio.')], flags: 64 });
+    await interaction.deferReply({ flags: 64 });
     const target = interaction.options.getUser('usuario');
     const cantidadReq = interaction.options.getInteger('cantidad') || 0;
     const motivo = interaction.options.getString('motivo');

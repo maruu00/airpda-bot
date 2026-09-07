@@ -48,7 +48,7 @@ async function execute(interaction, client) {
 
   if (cmd === 'hospital') {
     const player = await getPlayer(interaction.user.id, interaction.user.username);
-    if (!player.personajeCreado) return interaction.reply({ embeds: [E.warn('Sin personaje', 'Crea tu personaje primero.')], ephemeral: true });
+    if (!player.personajeCreado) return interaction.reply({ embeds: [E.warn('Sin personaje', 'Crea tu personaje primero.')], flags: 64 });
 
     if (player.enHospital) {
       const restante = player.tiempoHospital ? player.tiempoHospital.getTime() - Date.now() : 0;
@@ -59,7 +59,7 @@ async function execute(interaction, client) {
             .setTitle('🏥 En el hospital')
             .setDescription(`Ya estás hospitalizado. Saldrás en **${formatCooldown(restante)}**`)
             .setTimestamp()],
-          ephemeral: true,
+          flags: 64,
         });
       }
     }
@@ -73,7 +73,7 @@ async function execute(interaction, client) {
 
     const atencion = atenciones[tipo];
     if (player.bank < atencion.costo && player.cash < atencion.costo) {
-      return interaction.reply({ embeds: [E.err('Sin fondos', `La atención cuesta **${formatMoney(atencion.costo)}**. No tienes suficiente.`)], ephemeral: true });
+      return interaction.reply({ embeds: [E.err('Sin fondos', `La atención cuesta **${formatMoney(atencion.costo)}**. No tienes suficiente.`)], flags: 64 });
     }
 
     // Cobrar (primero banco, luego cash)
@@ -105,18 +105,18 @@ async function execute(interaction, client) {
   }
 
   if (cmd === 'curar') {
-    if (!hasMedicRole(interaction.member)) return interaction.reply({ embeds: [E.err('Sin permiso', 'Solo los médicos pueden usar este comando.')], ephemeral: true });
+    if (!hasMedicRole(interaction.member)) return interaction.reply({ embeds: [E.err('Sin permiso', 'Solo los médicos pueden usar este comando.')], flags: 64 });
     const healer = await getPlayer(interaction.user.id, interaction.user.username);
-    if (!healer.personajeCreado) return interaction.reply({ embeds: [E.warn('Sin personaje', 'Necesitas personaje.')], ephemeral: true });
+    if (!healer.personajeCreado) return interaction.reply({ embeds: [E.warn('Sin personaje', 'Necesitas personaje.')], flags: 64 });
 
     const inv = await getInventory(interaction.user.id);
     const kitMedico = inv.items.find(i => i.tipo === 'medkit' || i.nombre.toLowerCase().includes('botiquín') || i.nombre.toLowerCase().includes('kit'));
-    if (!kitMedico) return interaction.reply({ embeds: [E.err('Sin kit', 'Necesitas un kit médico en el inventario.\nCómpralo en `/tienda`.')], ephemeral: true });
+    if (!kitMedico) return interaction.reply({ embeds: [E.err('Sin kit', 'Necesitas un kit médico en el inventario.\nCómpralo en `/tienda`.')], flags: 64 });
 
     const target = interaction.options.getUser('usuario');
     const cantidadCura = interaction.options.getInteger('cantidad') || kitMedico.efecto?.salud || 25;
     const targetPlayer = await getPlayer(target.id, target.username);
-    if (!targetPlayer.personajeCreado) return interaction.reply({ embeds: [E.err('Sin personaje', 'Ese jugador no tiene personaje.')], ephemeral: true });
+    if (!targetPlayer.personajeCreado) return interaction.reply({ embeds: [E.err('Sin personaje', 'Ese jugador no tiene personaje.')], flags: 64 });
 
     const saludAntes = Math.floor(targetPlayer.salud);
     targetPlayer.salud = Math.min(100, targetPlayer.salud + cantidadCura);
@@ -147,7 +147,7 @@ async function execute(interaction, client) {
   if (cmd === 'estado') {
     const target = interaction.options.getUser('usuario') || interaction.user;
     const player = await getPlayer(target.id, target.username);
-    if (!player.personajeCreado) return interaction.reply({ embeds: [E.warn('Sin personaje', 'Sin personaje creado.')], ephemeral: true });
+    if (!player.personajeCreado) return interaction.reply({ embeds: [E.warn('Sin personaje', 'Sin personaje creado.')], flags: 64 });
 
     const E2 = require('../utils/embeds');
     const barra = E2.barraVida;
@@ -174,12 +174,12 @@ async function execute(interaction, client) {
   }
 
   if (cmd === 'revivir') {
-    if (!hasMedicRole(interaction.member)) return interaction.reply({ embeds: [E.err('Sin permiso', 'Solo los médicos pueden revivir jugadores.')], ephemeral: true });
+    if (!hasMedicRole(interaction.member)) return interaction.reply({ embeds: [E.err('Sin permiso', 'Solo los médicos pueden revivir jugadores.')], flags: 64 });
 
     const target = interaction.options.getUser('usuario');
     const targetPlayer = await getPlayer(target.id, target.username);
-    if (!targetPlayer.personajeCreado) return interaction.reply({ embeds: [E.err('Sin personaje', 'Ese jugador no tiene personaje.')], ephemeral: true });
-    if (!targetPlayer.muerto && !targetPlayer.enHospital) return interaction.reply({ embeds: [E.warn('No herido', 'Ese jugador no está herido ni en el hospital.')], ephemeral: true });
+    if (!targetPlayer.personajeCreado) return interaction.reply({ embeds: [E.err('Sin personaje', 'Ese jugador no tiene personaje.')], flags: 64 });
+    if (!targetPlayer.muerto && !targetPlayer.enHospital) return interaction.reply({ embeds: [E.warn('No herido', 'Ese jugador no está herido ni en el hospital.')], flags: 64 });
 
     targetPlayer.muerto = false;
     targetPlayer.enHospital = false;

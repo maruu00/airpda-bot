@@ -51,9 +51,9 @@ async function execute(interaction) {
 
   if (sub === 'lista') {
     if (!requireBadge(interaction.member, [config.roles.policia, config.roles.sheriff])) {
-      return interaction.reply({ embeds: [E.err('Sin autorización', 'Solo el personal policial puede gestionar operativos.')], ephemeral: true });
+      return interaction.reply({ embeds: [E.err('Sin autorización', 'Solo el personal policial puede gestionar operativos.')], flags: 64 });
     }
-    await interaction.deferReply({ ephemeral: true });
+    await interaction.deferReply({ flags: 64 });
 
     const operativos = await pdaApi.getOperativos().catch(() => []);
     if (!operativos.length) {
@@ -79,9 +79,9 @@ async function execute(interaction) {
 
   if (sub === 'crear') {
     if (!requireBadge(interaction.member, [config.roles.policia, config.roles.sheriff])) {
-      return interaction.reply({ embeds: [E.err('Sin autorización', 'Solo el personal policial puede gestionar operativos.')], ephemeral: true });
+      return interaction.reply({ embeds: [E.err('Sin autorización', 'Solo el personal policial puede gestionar operativos.')], flags: 64 });
     }
-    await interaction.deferReply({ ephemeral: true });
+    await interaction.deferReply({ flags: 64 });
 
     const nombre      = interaction.options.getString('nombre');
     const descripcion = interaction.options.getString('descripcion');
@@ -147,9 +147,9 @@ async function execute(interaction) {
 
   if (sub === 'cerrar') {
     if (!requireBadge(interaction.member, [config.roles.policia, config.roles.sheriff])) {
-      return interaction.reply({ embeds: [E.err('Sin autorización', 'Solo el personal policial puede gestionar operativos.')], ephemeral: true });
+      return interaction.reply({ embeds: [E.err('Sin autorización', 'Solo el personal policial puede gestionar operativos.')], flags: 64 });
     }
-    await interaction.deferReply({ ephemeral: true });
+    await interaction.deferReply({ flags: 64 });
 
     const id     = interaction.options.getString('id');
     const estado = interaction.options.getString('estado');

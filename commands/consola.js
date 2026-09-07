@@ -30,16 +30,16 @@ async function execute(interaction) {
     else console.log(tag);
     const embed = new EmbedBuilder().setColor(nivel === 'error' ? 0xef4444 : nivel === 'warn' ? 0xf59e0b : 0x3b82f6).setTitle('📟 Consola').setDescription(`\`\`\`js\n${msg.slice(0,1900)}\n\`\`\``).addFields({ name: 'Enviado por', value: `${interaction.user.tag} (${interaction.user.id})`, inline: true }, { name: 'Nivel', value: nivel, inline: true }).setTimestamp();
     await sendToLogChannel(interaction.client, { embeds: [embed] });
-    return interaction.reply({ embeds: [new EmbedBuilder().setColor(0x22c55e).setTitle('✅ Enviado a consola').setDescription(`\`\`\`js\n${msg.slice(0,500)}\n\`\`\``)], ephemeral: true });
+    return interaction.reply({ embeds: [new EmbedBuilder().setColor(0x22c55e).setTitle('✅ Enviado a consola').setDescription(`\`\`\`js\n${msg.slice(0,500)}\n\`\`\``)], flags: 64 });
   }
   if (cmd === 'consola-eval') {
     // Solo el owner del bot (primer admin) puede evaluar código
     const ownerId = process.env.OWNER_ID || interaction.guild.ownerId;
     if (interaction.user.id !== ownerId && !interaction.member.permissions.has(PermissionFlagsBits.Administrator)) {
-      return interaction.reply({ embeds: [new EmbedBuilder().setColor(0xef4444).setTitle('Sin permisos').setDescription('Solo el owner puede usar este comando.')], ephemeral: true });
+      return interaction.reply({ embeds: [new EmbedBuilder().setColor(0xef4444).setTitle('Sin permisos').setDescription('Solo el owner puede usar este comando.')], flags: 64 });
     }
     const code = interaction.options.getString('codigo');
-    await interaction.deferReply({ ephemeral: true });
+    await interaction.deferReply({ flags: 64 });
     try {
       // eslint-disable-next-line no-eval
       const result = eval(code);
