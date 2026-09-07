@@ -418,6 +418,16 @@ async function execute(interaction, client) {
     await multa.save();
     await player.save();
 
+    // Ingresar al Banco del Estado
+    try {
+      const BancoEstado = require('../database/models/BancoEstado');
+      await BancoEstado.findOneAndUpdate(
+        { guildId: interaction.guildId },
+        { $inc: { saldo: multa.cantidad, totalRecaudado: multa.cantidad } },
+        { upsert: true, setDefaultsOnInsert: true }
+      );
+    } catch {}
+
     // Desactivar también la sanción en la PDA dashboard
     try {
       const pdaApi = require('../utils/pdaApi');
@@ -427,7 +437,7 @@ async function execute(interaction, client) {
     } catch {}
 
     return interaction.editReply({
-      embeds: [E.ok('Multa pagada', `Pagaste la multa **${multa.multaId}** por ${formatMoney(multa.cantidad)}.\n💵 Cash restante: ${formatMoney(player.cash)} | 🏦 Banco: ${formatMoney(player.bank)}`)],
+      embeds: [new EmbedBuilder().setColor(0x22c55e).setTitle('✅ Multa pagada').setDescription(`Pagaste la multa **${multa.multaId}** por ${formatMoney(multa.cantidad)}.\n💵 Cash: ${formatMoney(player.cash)} | 🏦 Banco: ${formatMoney(player.bank)}\n\n🏦 **${formatMoney(multa.cantidad)}** ingresados al **Banco del Estado**.`).setTimestamp()],
     });
   }
 

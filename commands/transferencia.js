@@ -34,6 +34,12 @@ const data = [
 async function execute(interaction, client) {
   const cmd = interaction.commandName;
 
+  // Bloqueo por facturas — /dar-item es transferencia de items, también bloqueado
+  if (['dar-item'].includes(cmd)) {
+    const { checkFacturaBlock } = require('../utils/facturaBlock');
+    if (await checkFacturaBlock(interaction)) return;
+  }
+
   // ── DAR DINERO / ADD-MONEY ─────────────────────────────────────────────────
   if (cmd === 'dar-dinero') {
     if (!interaction.member.permissions.has(PermissionFlagsBits.Administrator)) {
@@ -99,6 +105,10 @@ const prefixCommands = [
     aliases: ['transfer', 'enviar'],
     description: '!transferir @usuario [cantidad] [limpio/sucio/banco]',
     async run(message, args) {
+      const { hasFacturasPendientes } = require('../utils/facturaBlock');
+      if (await hasFacturasPendientes(message.author.id)) {
+        return message.reply('🔴 **Bloqueado:** Tienes facturas pendientes. Usa `/factura-lista` y paga con `/pagar-factura [ID]`. Solo puedes ver tu dinero.');
+      }
       const target   = message.mentions.users.first();
       const cantidad = parseInt(args[1]);
       const tipo     = args[2]?.toLowerCase() || 'limpio';

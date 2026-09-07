@@ -66,6 +66,13 @@ module.exports = {
       const id = interaction.customId;
       const [action] = interaction.customId.split(':');
 
+      // Facturas — pagar desde /factura-lista
+      if (id.startsWith('factura_pagar_')) {
+        const { handleFacturaButton } = require('../commands/mecanico');
+        const handled = await handleFacturaButton(interaction, client).catch(e => console.error('[factura_btn]', e));
+        if (handled) return;
+      }
+
       // Tickets — sistema FuriaNetworkBot
       if (id.startsWith('ticket_')) {
         const { handleTicketButton } = require('../systems/tickets/ticketSystem');

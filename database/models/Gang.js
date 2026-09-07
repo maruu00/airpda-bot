@@ -65,6 +65,17 @@ const gangSchema = new mongoose.Schema({
   creadoEn: { type: Date, default: Date.now },
 }, { strict: false });
 
+// Auto-generar tag si falta (bandas legacy de la web sin tag)
+gangSchema.pre('validate', function(next) {
+  if (!this.tag) {
+    const base = String(this.nombre || 'TAG').replace(/[^A-Za-z0-9]/g, '').substring(0, 5).toUpperCase() || 'TAG';
+    this.tag = base;
+  } else {
+    this.tag = String(this.tag).toUpperCase().substring(0, 5);
+  }
+  next();
+});
+
 gangSchema.methods.getMiembro = function(discordId) {
   return this.miembros.find(m => m.discordId === discordId) || null;
 };

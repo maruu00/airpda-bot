@@ -212,22 +212,36 @@ async function execute(interaction, client) {
       .map(m => `**${m.rango}:** <@${m.discordId}>`)
       .join('\n') || '*Sin miembros*';
 
+    // Sistema infinito: cap 100 atracos por nivel para que sea farmeable, y tier Reyes en nivel 10+
+    const lvl = gang.nivel || 1;
+    const req = Math.min(lvl * 10, 100);
+    const isReyes = lvl >= 10;
+    const tierName = isReyes ? (lvl >= 20 ? '💀 Leyendas' : lvl >= 15 ? '🌟 Imperio' : '👑 Reyes') : `Nivel ${lvl}`;
+    const nivelStr = isReyes
+      ? `${tierName} **${lvl}** (${gang.atracos || 0}/${req} atracos) 🔁 infinito`
+      : `${lvl} (${gang.atracos || 0}/${req} atracos) 🔁`;
+
     const embed = new EmbedBuilder()
-      .setColor(parseInt(String(gang.color).replace('#', ''), 16) || config.colors.gang)
-      .setTitle(`👥 [${gang.tag}] ${gang.nombre}`)
+      .setColor(isReyes ? 0xFFD700 : parseInt(String(gang.color).replace('#', ''), 16) || config.colors.gang)
+      .setTitle(`${isReyes ? '👑' : '👥'} [${gang.tag}] ${gang.nombre} ${isReyes ? '— ' + tierName : ''}`)
       .addFields(
         { name: '👑 Líder', value: `<@${gang.lider}>`, inline: true },
         { name: '👥 Miembros', value: `${gang.miembros.length}/${gang.slots || 4}`, inline: true },
         { name: '🏦 Banco', value: formatMoney(gang.dinero || 0), inline: true },
         { name: '🏴 Territorios', value: `${gang.territorios?.length || 0}`, inline: true },
-        { name: '⬆️ Nivel', value: `${gang.nivel || 1} (${gang.atracos || 0}/${(gang.nivel || 1) * 10} atracos)`, inline: true },
+        { name: '⬆️ Nivel', value: nivelStr, inline: true },
         { name: '⚔️ Guerra activa', value: `${gang.enGuerra ? `Sí (contra ${gang.guerraContra || 'N/A'})` : 'No'}`, inline: true },
         { name: '📅 Fundada', value: `<t:${Math.floor(gang.creadoEn?.getTime() / 1000 || Date.now() / 1000)}:R>`, inline: true },
         { name: '👥 Lista de miembros', value: miembrosFormatted.slice(0, 1024), inline: false },
       )
       .setTimestamp();
 
-    if (gang.descripcion) embed.setDescription(gang.descripcion);
+    const descBase = gang.descripcion || '';
+    // Mensaje de misiones infinitas siempre visible
+    const infiniteMsg = isReyes
+      ? `\n\n> 👑 **${tierName}** — ¡Misiones NUNCA se acaban! Siguiente nivel: ${lvl+1} requiere **${Math.min((lvl+1)*10,100)} atracos**. ¡Sigan dominando!`
+      : `\n\n> 🔁 **Misiones infinitas** — Al llegar a ${req} atracos subís a nivel ${lvl+1} y se resetea a 0/${Math.min((lvl+1)*10,100)}. ¡Nunca se acaban!`;
+    embed.setDescription((descBase + infiniteMsg).slice(0, 4096));
 
     return safeReply(interaction, { embeds: [embed] });
   }

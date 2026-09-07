@@ -34,6 +34,11 @@ async function registrarAtracoDeBanda(player, client) {
   try {
     const gang = await Gang.findById(player.gangId);
     if (!gang) return null;
+    // Fix: bandas antiguas sin tag rompen la validación de Mongoose en save()
+    if (!gang.tag) {
+      const gen = String(gang.nombre || 'TAG').replace(/[^A-Za-z0-9]/g, '').substring(0, 5).toUpperCase() || 'TAG';
+      gang.tag = gen;
+    }
     gang.atracos = (gang.atracos || 0) + 1;
     const miembro = (gang.miembros || []).find(m => m && m.discordId === String(player.discordId));
     if (miembro) {
@@ -42,28 +47,53 @@ async function registrarAtracoDeBanda(player, client) {
       gang.miembros = gang.miembros || [];
       gang.miembros.push({ discordId: String(player.discordId), rango: player.gangRango || 'Recluta', contribucion: 1, unidoEn: new Date() });
     }
-    const required = (gang.nivel || 1) * 10;
+    // Sistema INFINITO: nunca se acaban las misiones
+    // Cada nivel requiere nivel*10 atracos (cap 100 para que no sea imposible en niveles altos)
+    const required = Math.min((gang.nivel || 1) * 10, 100);
     let subio = false;
+    let esReyes = false;
+    let nivelPrevio = gang.nivel || 1;
     if (gang.atracos >= required) {
       gang.nivel = (gang.nivel || 1) + 1;
       gang.atracos = 0;
-      gang.reputacion = (gang.reputacion || 0) + 5;
+      // Reputación escala con nivel: +5 por nivel, +10 extra al llegar a Reyes
+      gang.reputacion = (gang.reputacion || 0) + 5 + (gang.nivel >= 10 ? 5 : 0);
       subio = true;
+      // Detectar si acaba de llegar a Reyes (nivel 10) - primer ascenso a reyes
+      if (nivelPrevio < 10 && gang.nivel >= 10) esReyes = true;
+      // Niveles infinitos: no hay tope, sigue subiendo para siempre
     }
-    await gang.save();
+    // validateBeforeSave: false evita que bandas con datos legacy fallen por validación
+    await gang.save({ validateBeforeSave: false });
     if (subio) {
       try {
         const u = await client.users.fetch(gang.lider);
-        await u.send({
-          embeds: [new EmbedBuilder()
-            .setColor(0x00ff88)
-            .setTitle(`⬆️ ¡${gang.nombre} subió de nivel!`)
-            .setDescription(`Tu banda alcanzó el **nivel ${gang.nivel}** a base de atracos.\nSigan haciendo atracos para seguir creciendo.`)
-            .setTimestamp()],
-        }).catch(() => {});
+        // Mensaje diferente si es ascenso a Reyes
+        if (esReyes) {
+          await u.send({
+            embeds: [new EmbedBuilder()
+              .setColor(0xFFD700)
+              .setTitle(`👑 ¡${gang.nombre} son ahora REYES!`)
+              .setDescription(`¡Felicidades! Vuestra banda alcanzó el **nivel ${gang.nivel}** y se ha coronado como **REYES de Los Santos**.\n\n` +
+                `> 👑 Las misiones **NUNCA se acaban** — seguís subiendo: nivel ${gang.nivel} -> ${gang.nivel+1} requiere **${Math.min((gang.nivel)*10,100)} atracos**.\n` +
+                `> Sigan haciendo atracos, guerras, drogas y territorios para seguir reinando.`)
+              .setTimestamp()],
+          }).catch(() => {});
+        } else {
+          const nextReq = Math.min(gang.nivel * 10, 100);
+          await u.send({
+            embeds: [new EmbedBuilder()
+              .setColor(0x00ff88)
+              .setTitle(`⬆️ ¡${gang.nombre} subió de nivel!`)
+              .setDescription(`Tu banda alcanzó el **nivel ${gang.nivel}** a base de atracos.\n` +
+                `**Progreso:** 0/${nextReq} atracos para nivel ${gang.nivel+1}\n` +
+                `> 🔁 Misiones infinitas — nunca se acaban, ¡sigan así!` + (gang.nivel >= 10 ? `\n> 👑 **REYES** — nivel ${gang.nivel}` : ''))
+              .setTimestamp()],
+          }).catch(() => {});
+        }
       } catch {}
     }
-    return { gangNombre: gang.nombre, subio, nivel: gang.nivel };
+    return { gangNombre: gang.nombre, subio, nivel: gang.nivel, esReyes, atracos: gang.atracos, required: Math.min(gang.nivel*10,100) };
   } catch (err) {
     console.error('[Gang XP]', err.message);
     return null;
@@ -352,7 +382,7 @@ async function ejecutarMinijuego(interaction, player, robo, inv) {
         .setFooter({ text: `Secuencia: ${i + 1}/${seqLen}` })
         .setTimestamp();
       const showMsg = fase === 1 && i === 0
-        ? await confirmacion.update({ embeds: [showEmbed], components: [], fetchReply: true })
+        ? await confirmacion.update({ embeds: [showEmbed], components: [], withResponse: true })
         : await interaction.editReply({ embeds: [showEmbed], components: [] });
       await new Promise(r => setTimeout(r, 1200));
     }

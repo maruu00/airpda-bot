@@ -282,11 +282,11 @@ async function execute(interaction, client) {
     const catFija = interaction.options.getString('categoria');
     const catInicial = catFija || 'comida';
 
-    const msg = await interaction.reply({
+    await interaction.reply({
       embeds: [catEmbed(catInicial)],
       components: [buildSelectMenu(catInicial)],
-      withResponse: true,
     });
+    const msg = await interaction.fetchReply();
 
     const collector = msg.createMessageComponentCollector({
       componentType: ComponentType.StringSelect,

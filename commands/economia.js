@@ -115,6 +115,24 @@ const data = [
 async function execute(interaction, client) {
   const cmd = interaction.commandName;
 
+  // Bloqueo por facturas pendientes — solo billetera y top permitidos
+  const bloqueados = ['depositar','retirar','transferir','pagar','blanquear','cobrar'];
+  if (bloqueados.includes(cmd)) {
+    const { checkFacturaBlock } = require('../utils/facturaBlock');
+    if (await checkFacturaBlock(interaction)) return;
+  }
+  // Para /banco, bloquear subcomandos que mueven dinero, pero permitir crear/estado/cambiar-pin
+  if (cmd === 'banco') {
+    const subBloqueados = ['ahorros-depositar','ahorros-retirar'];
+    try {
+      const sub = interaction.options.getSubcommand();
+      if (subBloqueados.includes(sub)) {
+        const { checkFacturaBlock } = require('../utils/facturaBlock');
+        if (await checkFacturaBlock(interaction)) return;
+      }
+    } catch {}
+  }
+
   // ── /billetera ──────────────────────────────────────────────────────────────
   if (cmd === 'billetera') {
     const player = await requirePersonaje(interaction);
@@ -661,6 +679,10 @@ const prefixCommands = [
     aliases: ['ingresar', 'depo'],
     description: 'Depositar cash en el banco',
     async run(message, args) {
+      const { hasFacturasPendientes } = require('../utils/facturaBlock');
+      if (await hasFacturasPendientes(message.author.id)) {
+        return message.reply('🔴 **Bloqueado:** Tienes facturas pendientes. Usa `/factura-lista` y paga con `/pagar-factura [ID]`. Solo puedes ver tu dinero hasta saldar.');
+      }
       const player = await getPlayer(message.author.id, message.author.username);
       if (!player.personajeCreado) return message.reply('Sin personaje. Usa `/personaje crear`.');
       const cant = parseInt(args[0], 10);
@@ -684,6 +706,10 @@ const prefixCommands = [
     cooldown: config.cooldowns.cobrar,
     description: 'Cobrar salario',
     async run(message) {
+      const { hasFacturasPendientes } = require('../utils/facturaBlock');
+      if (await hasFacturasPendientes(message.author.id)) {
+        return message.reply('🔴 **Bloqueado:** Tienes facturas pendientes. Usa `/factura-lista` y paga con `/pagar-factura [ID]`.');
+      }
       const player = await getPlayer(message.author.id, message.author.username);
       if (!player.personajeCreado) return message.reply('Sin personaje.');
       const lastCobro = player.getCooldown('cobrar');
