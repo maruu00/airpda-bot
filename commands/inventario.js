@@ -217,8 +217,8 @@ async function execute(interaction, client) {
     const targetInv = await getInventory(target.id);
     if (targetInv.countItems() >= targetInv.capacidadMax) return interaction.reply({ embeds: [E.err('Inventario lleno', 'El inventario del otro jugador está lleno.')], flags: 64 });
 
-    inv.removeItem(item.nombre, cantidad);
-    targetInv.addItem({ nombre: item.nombre, tipo: item.tipo, emoji: item.emoji, cantidad, equipable: item.equipable, precio: item.precio, efecto: item.efecto });
+    inv.removeItem(item.id || item.nombre, cantidad);
+    targetInv.addItem({ id: item.id, nombre: item.nombre, tipo: item.tipo, emoji: item.emoji, cantidad, equipable: item.equipable, precio: item.precio, efecto: item.efecto });
     await inv.save();
     await targetInv.save();
 
