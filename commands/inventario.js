@@ -83,6 +83,7 @@ async function execute(interaction, client) {
     if (viewingOther && !isAdminInv(interaction.member)) {
       return interaction.reply({ embeds: [E.err('Sin permiso', 'Solo los admins pueden ver el inventario de otros.')], ephemeral: true });
     }
+    try { await interaction.deferReply({ ephemeral: viewingOther }); } catch {}
     const uid = target?.id || interaction.user.id;
     const nombre = target?.username || interaction.user.username;
     const inv = await getInventory(uid);
@@ -105,7 +106,7 @@ async function execute(interaction, client) {
     }
 
     if (url) embed.setImage(url);
-    return interaction.reply({ embeds: [embed], files: attachment ? [attachment] : [] });
+    try { return await interaction.editReply({ embeds: [embed], files: attachment ? [attachment] : [] }); } catch { return interaction.reply({ embeds: [embed], files: attachment ? [attachment] : [] }).catch(()=>{}); }
   }
 
   if (cmd === 'equipar') {
