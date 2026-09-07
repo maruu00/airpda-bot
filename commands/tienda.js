@@ -681,7 +681,12 @@ const prefixCommands = [
       });
 
       collector.on('collect', async i => {
-        await i.update({ embeds: [catEmbed(i.values[0])], components: [buildSelectMenu(i.values[0])] });
+        try {
+          await i.deferUpdate();
+          await i.editReply({ embeds: [catEmbed(i.values[0])], components: [buildSelectMenu(i.values[0])] });
+        } catch {
+          try { await i.update({ embeds: [catEmbed(i.values[0])], components: [buildSelectMenu(i.values[0])] }); } catch {}
+        }
       });
 
       collector.on('end', () => {
@@ -719,7 +724,7 @@ const prefixCommands = [
           if (!exist2) {
             await Licencia2.create({ propietarioId: message.author.id, propietarioNombre: `${player.nombre} ${player.apellido}`.trim() || message.author.username, tipo: tipo2, numeroLicencia: licNum2, estado: 'vigente', fechaExpedicion: new Date(), fechaVencimiento: venc2, diasValidez: 30, registradoPor: 'BOT-Tienda', fecha: new Date() });
           } else { exist2.fechaVencimiento = venc2; exist2.fechaExpedicion = new Date(); exist2.estado = 'vigente'; await exist2.save(); }
-        } catch (e) { console.error('Licencia sync prefix error:', e.message); }
+        } catch (e) { console.error('Licencia sync prefix error:', e.stack || e.message); }
       }
       inv.addItem({ id: item.id, nombre: item.nombre, emoji: item.emoji, tipo: item.tipo, precio: item.precio, descripcion: item.desc, efecto: item.efecto || {}, equipable: item.equipable || false, equipado: false, metadata: tipo2 ? { tipoLicencia: tipo2, fechaVencimiento: venc2 ? venc2.toISOString() : null } : {} }, cantidad);
       player.cash -= total;
