@@ -1,0 +1,1282 @@
+{
+  "index": {
+    "911": [
+      "auxilio"
+    ],
+    "rellena": [
+      "rellenar_comida_todos",
+      "rellenar_comida_usuario"
+    ],
+    "rellenar": [
+      "rellenar_comida_todos"
+    ],
+    "llena": [
+      "rellenar_comida_todos"
+    ],
+    "recarga": [
+      "rellenar_comida_todos"
+    ],
+    "comida": [
+      "rellenar_comida_todos",
+      "rellenar_comida_usuario"
+    ],
+    "hambre": [
+      "rellenar_comida_todos",
+      "rellenar_comida_usuario"
+    ],
+    "sed": [
+      "rellenar_comida_todos",
+      "rellenar_comida_usuario"
+    ],
+    "bebida": [
+      "rellenar_comida_todos"
+    ],
+    "energia": [
+      "rellenar_comida_todos"
+    ],
+    "todos": [
+      "rellenar_comida_todos",
+      "dar_rol_todos"
+    ],
+    "all": [
+      "rellenar_comida_todos"
+    ],
+    "full": [
+      "rellenar_comida_todos"
+    ],
+    "usuario": [
+      "rellenar_comida_usuario",
+      "userinfo"
+    ],
+    "dar": [
+      "dar_dinero",
+      "dar_rol",
+      "dar_rol_todos"
+    ],
+    "da": [
+      "dar_dinero"
+    ],
+    "dona": [
+      "dar_dinero"
+    ],
+    "dale": [
+      "dar_dinero"
+    ],
+    "otorga": [
+      "dar_dinero",
+      "dar_rol"
+    ],
+    "dinero": [
+      "dar_dinero",
+      "quitar_dinero",
+      "ver_dinero"
+    ],
+    "cash": [
+      "dar_dinero"
+    ],
+    "banco": [
+      "dar_dinero",
+      "ver_dinero",
+      "banda_banco"
+    ],
+    "sucio": [
+      "dar_dinero",
+      "blanquear",
+      "quitar_sucio"
+    ],
+    "plata": [
+      "dar_dinero"
+    ],
+    "euros": [
+      "dar_dinero"
+    ],
+    "quita": [
+      "quitar_dinero",
+      "quitar_rol",
+      "quitar_sucio"
+    ],
+    "quitar": [
+      "quitar_dinero"
+    ],
+    "remueve": [
+      "quitar_dinero",
+      "quitar_rol"
+    ],
+    "resta": [
+      "quitar_dinero"
+    ],
+    "ver": [
+      "ver_dinero"
+    ],
+    "muestra": [
+      "ver_dinero"
+    ],
+    "cuanto": [
+      "ver_dinero"
+    ],
+    "billetera": [
+      "ver_dinero"
+    ],
+    "saldo": [
+      "ver_dinero"
+    ],
+    "patrimonio": [
+      "ver_dinero"
+    ],
+    "transfiere": [
+      "transferir"
+    ],
+    "transferir": [
+      "transferir"
+    ],
+    "envia": [
+      "transferir"
+    ],
+    "enviar": [
+      "transferir"
+    ],
+    "paga": [
+      "transferir",
+      "factura_pagar"
+    ],
+    "transfer": [
+      "transferir"
+    ],
+    "deposita": [
+      "depositar"
+    ],
+    "depositar": [
+      "depositar"
+    ],
+    "ingresa": [
+      "depositar"
+    ],
+    "mete.*banco": [
+      "depositar"
+    ],
+    "retira": [
+      "retirar",
+      "quitar_rol"
+    ],
+    "retirar": [
+      "retirar"
+    ],
+    "saca.*banco": [
+      "retirar"
+    ],
+    "blanquea": [
+      "blanquear"
+    ],
+    "blanquear": [
+      "blanquear"
+    ],
+    "lavar": [
+      "blanquear"
+    ],
+    "limpio": [
+      "blanquear"
+    ],
+    "cobra": [
+      "cobrar",
+      "factura_crear"
+    ],
+    "cobrar": [
+      "cobrar"
+    ],
+    "salario": [
+      "cobrar"
+    ],
+    "sueldo": [
+      "cobrar"
+    ],
+    "paga.*trabajo": [
+      "cobrar"
+    ],
+    "top": [
+      "top_dinero"
+    ],
+    "ranking": [
+      "top_dinero"
+    ],
+    "ricos": [
+      "top_dinero"
+    ],
+    "mas.*rico": [
+      "top_dinero"
+    ],
+    "dame": [
+      "dar_rol"
+    ],
+    "asigna": [
+      "dar_rol"
+    ],
+    "pon": [
+      "dar_rol"
+    ],
+    "anade": [
+      "dar_rol",
+      "banda_invitar"
+    ],
+    "agrega": [
+      "dar_rol"
+    ],
+    "rol": [
+      "dar_rol",
+      "quitar_rol",
+      "crear_rol",
+      "borrar_rol",
+      "dar_rol_todos",
+      "roleinfo"
+    ],
+    "saca": [
+      "quitar_rol",
+      "kick",
+      "banda_expulsar",
+      "vehiculo_sacar"
+    ],
+    "crea": [
+      "crear_rol",
+      "banda_crear",
+      "personaje_crear"
+    ],
+    "crear": [
+      "crear_rol"
+    ],
+    "nuevo": [
+      "crear_rol"
+    ],
+    "borra": [
+      "borrar_rol",
+      "clear"
+    ],
+    "elimina": [
+      "borrar_rol"
+    ],
+    "lista": [
+      "listar_roles",
+      "factura_lista"
+    ],
+    "roles": [
+      "listar_roles"
+    ],
+    "ver.*roles": [
+      "listar_roles"
+    ],
+    "everyone": [
+      "dar_rol_todos"
+    ],
+    "silencia": [
+      "silenciar"
+    ],
+    "mutea": [
+      "silenciar"
+    ],
+    "silenciar": [
+      "silenciar"
+    ],
+    "mutear": [
+      "silenciar"
+    ],
+    "timeout": [
+      "silenciar",
+      "timeout"
+    ],
+    "aisla": [
+      "silenciar",
+      "timeout"
+    ],
+    "callar": [
+      "silenciar"
+    ],
+    "mute": [
+      "silenciar"
+    ],
+    "desilencia": [
+      "desilenciar"
+    ],
+    "desmutea": [
+      "desilenciar"
+    ],
+    "unmute": [
+      "desilenciar"
+    ],
+    "quita.*silencio": [
+      "desilenciar"
+    ],
+    "desaisla": [
+      "desilenciar"
+    ],
+    "banea": [
+      "ban"
+    ],
+    "banear": [
+      "ban"
+    ],
+    "ban": [
+      "ban"
+    ],
+    "baneo": [
+      "ban"
+    ],
+    "bloquea.*usuario": [
+      "ban"
+    ],
+    "desbanea": [
+      "unban"
+    ],
+    "unban": [
+      "unban"
+    ],
+    "quita.*ban": [
+      "unban"
+    ],
+    "perdona": [
+      "unban"
+    ],
+    "expulsa": [
+      "kick",
+      "banda_expulsar"
+    ],
+    "kick": [
+      "kick"
+    ],
+    "echa": [
+      "kick",
+      "banda_expulsar"
+    ],
+    "patada": [
+      "kick"
+    ],
+    "warn": [
+      "warn"
+    ],
+    "advierte": [
+      "warn"
+    ],
+    "avisa": [
+      "warn"
+    ],
+    "amonesta": [
+      "warn"
+    ],
+    "warns": [
+      "warns"
+    ],
+    "avisos": [
+      "warns"
+    ],
+    "infracciones": [
+      "warns"
+    ],
+    "limpia": [
+      "clear"
+    ],
+    "clear": [
+      "clear"
+    ],
+    "elimina.*mensajes": [
+      "clear"
+    ],
+    "purge": [
+      "clear"
+    ],
+    "slowmode": [
+      "slowmode"
+    ],
+    "lento": [
+      "slowmode"
+    ],
+    "ralentiza": [
+      "slowmode"
+    ],
+    "cooldown.*canal": [
+      "slowmode"
+    ],
+    "bloquea": [
+      "lock"
+    ],
+    "cierra": [
+      "lock"
+    ],
+    "lock": [
+      "lock"
+    ],
+    "candado": [
+      "lock"
+    ],
+    "canal": [
+      "lock"
+    ],
+    "desbloquea": [
+      "unlock"
+    ],
+    "abre": [
+      "unlock"
+    ],
+    "unlock": [
+      "unlock"
+    ],
+    "castiga": [
+      "timeout"
+    ],
+    "nuke": [
+      "nuke"
+    ],
+    "resetea.*canal": [
+      "nuke"
+    ],
+    "factura": [
+      "factura_crear",
+      "factura_lista",
+      "factura_pagar"
+    ],
+    "emite": [
+      "factura_crear"
+    ],
+    "repara": [
+      "factura_crear",
+      "reparar"
+    ],
+    "taller": [
+      "factura_crear"
+    ],
+    "facturas": [
+      "factura_lista"
+    ],
+    "pendientes": [
+      "factura_lista"
+    ],
+    "ver.*facturas": [
+      "factura_lista"
+    ],
+    "pagar": [
+      "factura_pagar",
+      "pagar_multa"
+    ],
+    "reparar": [
+      "reparar"
+    ],
+    "arregla": [
+      "reparar"
+    ],
+    "coche": [
+      "reparar",
+      "vehiculo_dar",
+      "vehiculo_sacar"
+    ],
+    "taximetro": [
+      "taximetro"
+    ],
+    "taxi": [
+      "taximetro"
+    ],
+    "viaje": [
+      "taximetro"
+    ],
+    "multa": [
+      "multar",
+      "pagar_multa"
+    ],
+    "multar": [
+      "multar"
+    ],
+    "sanciona": [
+      "multar"
+    ],
+    "infraccion": [
+      "multar"
+    ],
+    "multas": [
+      "multas_ver"
+    ],
+    "ver.*multas": [
+      "multas_ver"
+    ],
+    "lista.*multas": [
+      "multas_ver"
+    ],
+    "esposa": [
+      "esposar"
+    ],
+    "esposar": [
+      "esposar"
+    ],
+    "arresta": [
+      "esposar"
+    ],
+    "deten": [
+      "esposar"
+    ],
+    "desesposa": [
+      "desesposar"
+    ],
+    "quita.*esposas": [
+      "desesposar"
+    ],
+    "libera": [
+      "desesposar"
+    ],
+    "cachea": [
+      "cachear"
+    ],
+    "cachear": [
+      "cachear"
+    ],
+    "registra": [
+      "cachear"
+    ],
+    "revisa": [
+      "cachear"
+    ],
+    "escolta": [
+      "escoltar"
+    ],
+    "lleva": [
+      "escoltar"
+    ],
+    "acompana": [
+      "escoltar"
+    ],
+    "placa": [
+      "placa"
+    ],
+    "crea.*placa": [
+      "placa"
+    ],
+    "ver.*placa": [
+      "placa"
+    ],
+    "ver.*id": [
+      "ver_id"
+    ],
+    "dni": [
+      "ver_id"
+    ],
+    "identifica": [
+      "ver_id"
+    ],
+    "licencia": [
+      "licencia"
+    ],
+    "permiso": [
+      "licencia"
+    ],
+    "ver.*licencia": [
+      "licencia"
+    ],
+    "poli": [
+      "poli_dispo"
+    ],
+    "disponible": [
+      "poli_dispo"
+    ],
+    "servicio": [
+      "poli_dispo"
+    ],
+    "dispo": [
+      "poli_dispo"
+    ],
+    "auxilio": [
+      "auxilio"
+    ],
+    "ayuda": [
+      "auxilio",
+      "help"
+    ],
+    "emergencia": [
+      "auxilio"
+    ],
+    "limpia.*dinero": [
+      "quitar_sucio"
+    ],
+    "banda": [
+      "banda_info",
+      "banda_crear",
+      "banda_invitar",
+      "banda_expulsar",
+      "banda_banco",
+      "banda_promover"
+    ],
+    "info": [
+      "banda_info",
+      "serverinfo",
+      "userinfo",
+      "roleinfo"
+    ],
+    "ver.*banda": [
+      "banda_info"
+    ],
+    "gang": [
+      "banda_info"
+    ],
+    "crear.*banda": [
+      "banda_crear"
+    ],
+    "fundar": [
+      "banda_crear"
+    ],
+    "invita": [
+      "banda_invitar"
+    ],
+    "recluta": [
+      "banda_invitar"
+    ],
+    "depositar.*banda": [
+      "banda_banco"
+    ],
+    "retirar.*banda": [
+      "banda_banco"
+    ],
+    "promueve": [
+      "banda_promover"
+    ],
+    "asciende": [
+      "banda_promover"
+    ],
+    "territorio": [
+      "banda_territorio"
+    ],
+    "zona": [
+      "banda_territorio"
+    ],
+    "control": [
+      "banda_territorio"
+    ],
+    "guerra": [
+      "banda_guerra"
+    ],
+    "declara": [
+      "banda_guerra"
+    ],
+    "ataca.*banda": [
+      "banda_guerra"
+    ],
+    "personaje": [
+      "personaje_ver",
+      "personaje_crear"
+    ],
+    "ver.*personaje": [
+      "personaje_ver"
+    ],
+    "perfil": [
+      "personaje_ver",
+      "userinfo"
+    ],
+    "nuevo.*personaje": [
+      "personaje_crear"
+    ],
+    "revive": [
+      "revivir"
+    ],
+    "revivir": [
+      "revivir"
+    ],
+    "curar": [
+      "revivir"
+    ],
+    "resucita": [
+      "revivir"
+    ],
+    "reanimar": [
+      "revivir"
+    ],
+    "hospital": [
+      "hospital"
+    ],
+    "lleva.*hospital": [
+      "hospital"
+    ],
+    "manda.*hospital": [
+      "hospital"
+    ],
+    "trabajo": [
+      "set_trabajo",
+      "trabajo"
+    ],
+    "empleo": [
+      "set_trabajo",
+      "trabajo"
+    ],
+    "asigna.*trabajo": [
+      "set_trabajo"
+    ],
+    "contrata": [
+      "set_trabajo"
+    ],
+    "inventario": [
+      "inventario"
+    ],
+    "mochila": [
+      "inventario"
+    ],
+    "ver.*inventario": [
+      "inventario"
+    ],
+    "items": [
+      "inventario"
+    ],
+    "ropa": [
+      "ropa"
+    ],
+    "vestimenta": [
+      "ropa"
+    ],
+    "cambia.*ropa": [
+      "ropa"
+    ],
+    "movil": [
+      "movil"
+    ],
+    "telefono": [
+      "movil"
+    ],
+    "celular": [
+      "movil"
+    ],
+    "vehiculo": [
+      "vehiculo_dar",
+      "vehiculo_sacar",
+      "vehiculo_guardar"
+    ],
+    "auto": [
+      "vehiculo_dar"
+    ],
+    "dar.*vehiculo": [
+      "vehiculo_dar"
+    ],
+    "garaje": [
+      "vehiculo_sacar",
+      "vehiculo_guardar"
+    ],
+    "guarda": [
+      "vehiculo_guardar"
+    ],
+    "droga": [
+      "drogas"
+    ],
+    "planta": [
+      "drogas"
+    ],
+    "cultiva": [
+      "drogas"
+    ],
+    "siembra": [
+      "drogas"
+    ],
+    "maria": [
+      "drogas"
+    ],
+    "coca": [
+      "drogas"
+    ],
+    "compra": [
+      "tienda_comprar"
+    ],
+    "tienda": [
+      "tienda_comprar",
+      "tienda_vender"
+    ],
+    "compra.*item": [
+      "tienda_comprar"
+    ],
+    "vende": [
+      "tienda_vender"
+    ],
+    "vender": [
+      "tienda_vender"
+    ],
+    "trabaja": [
+      "trabajo"
+    ],
+    "currar": [
+      "trabajo"
+    ],
+    "atraca": [
+      "atracar"
+    ],
+    "roba": [
+      "atracar"
+    ],
+    "atraco": [
+      "atracar"
+    ],
+    "robo": [
+      "atracar"
+    ],
+    "asalta": [
+      "atracar"
+    ],
+    "secuestra": [
+      "secuestrar"
+    ],
+    "secuestrar": [
+      "secuestrar"
+    ],
+    "rapto": [
+      "secuestrar"
+    ],
+    "allana": [
+      "allanar"
+    ],
+    "allanar": [
+      "allanar"
+    ],
+    "casa": [
+      "allanar"
+    ],
+    "roba.*casa": [
+      "allanar"
+    ],
+    "anuncia": [
+      "anuncio"
+    ],
+    "anuncio": [
+      "anuncio"
+    ],
+    "aviso": [
+      "anuncio"
+    ],
+    "broadcast": [
+      "anuncio"
+    ],
+    "dice.*todos": [
+      "anuncio"
+    ],
+    "encuesta": [
+      "encuesta"
+    ],
+    "votacion": [
+      "encuesta"
+    ],
+    "pregunta": [
+      "encuesta"
+    ],
+    "poll": [
+      "encuesta"
+    ],
+    "servidor": [
+      "serverinfo",
+      "status"
+    ],
+    "server": [
+      "serverinfo"
+    ],
+    "datos.*servidor": [
+      "serverinfo"
+    ],
+    "quien.*es": [
+      "userinfo"
+    ],
+    "role": [
+      "roleinfo"
+    ],
+    "help": [
+      "help"
+    ],
+    "comandos": [
+      "help"
+    ],
+    "que.*puedes": [
+      "help"
+    ],
+    "lista.*comandos": [
+      "help"
+    ],
+    "status": [
+      "status"
+    ],
+    "estado": [
+      "status"
+    ],
+    "online": [
+      "status"
+    ],
+    "admin": [
+      "admin_on",
+      "admin_off"
+    ],
+    "on": [
+      "admin_on"
+    ],
+    "activa.*admin": [
+      "admin_on"
+    ],
+    "off": [
+      "admin_off"
+    ],
+    "desactiva.*admin": [
+      "admin_off"
+    ],
+    "pda": [
+      "pda"
+    ],
+    "policia": [
+      "pda"
+    ],
+    "dashboard": [
+      "pda"
+    ],
+    "operativo": [
+      "operativo"
+    ],
+    "operacion": [
+      "operativo"
+    ],
+    "despliegue": [
+      "operativo"
+    ]
+  },
+  "stats": {
+    "intents": 86,
+    "keywords": 351,
+    "indexed": 287,
+    "trainedAt": "2026-09-08T13:11:21.112Z",
+    "version": "2.0-infinita"
+  },
+  "knowledge": [
+    {
+      "id": "rellenar_comida_todos",
+      "ejemplo": "rellena la comida de todos"
+    },
+    {
+      "id": "rellenar_comida_usuario",
+      "ejemplo": "rellena la comida de @Usuario"
+    },
+    {
+      "id": "dar_dinero",
+      "ejemplo": "dale 5000 a @Usuario"
+    },
+    {
+      "id": "quitar_dinero",
+      "ejemplo": "quita 500 a @Usuario"
+    },
+    {
+      "id": "ver_dinero",
+      "ejemplo": "cuanto dinero tiene @Usuario"
+    },
+    {
+      "id": "transferir",
+      "ejemplo": "transfiere 1000 a @Usuario"
+    },
+    {
+      "id": "depositar",
+      "ejemplo": "deposita 500 en el banco"
+    },
+    {
+      "id": "retirar",
+      "ejemplo": "retira 500 del banco"
+    },
+    {
+      "id": "blanquear",
+      "ejemplo": "blanquea 5000"
+    },
+    {
+      "id": "cobrar",
+      "ejemplo": "cobra tu salario"
+    },
+    {
+      "id": "top_dinero",
+      "ejemplo": "top de mas ricos"
+    },
+    {
+      "id": "dar_rol",
+      "ejemplo": "dame el rol de @Rol"
+    },
+    {
+      "id": "quitar_rol",
+      "ejemplo": "quita el rol de @Rol a @Usuario"
+    },
+    {
+      "id": "crear_rol",
+      "ejemplo": "crea el rol Admin color rojo"
+    },
+    {
+      "id": "borrar_rol",
+      "ejemplo": "borra el rol @Rol"
+    },
+    {
+      "id": "listar_roles",
+      "ejemplo": "lista los roles"
+    },
+    {
+      "id": "dar_rol_todos",
+      "ejemplo": "dale el rol @X a todos"
+    },
+    {
+      "id": "silenciar",
+      "ejemplo": "silencia a @Usuario 10m"
+    },
+    {
+      "id": "desilenciar",
+      "ejemplo": "desilencia a @Usuario"
+    },
+    {
+      "id": "ban",
+      "ejemplo": "banea a @Usuario"
+    },
+    {
+      "id": "unban",
+      "ejemplo": "desbanea a 123456"
+    },
+    {
+      "id": "kick",
+      "ejemplo": "expulsa a @Usuario"
+    },
+    {
+      "id": "warn",
+      "ejemplo": "warn a @Usuario por toxicidad"
+    },
+    {
+      "id": "warns",
+      "ejemplo": "ver warns de @Usuario"
+    },
+    {
+      "id": "clear",
+      "ejemplo": "borra 50 mensajes"
+    },
+    {
+      "id": "slowmode",
+      "ejemplo": "pon slowmode 10s"
+    },
+    {
+      "id": "lock",
+      "ejemplo": "bloquea el canal"
+    },
+    {
+      "id": "unlock",
+      "ejemplo": "desbloquea el canal"
+    },
+    {
+      "id": "timeout",
+      "ejemplo": "timeout a @Usuario 1h"
+    },
+    {
+      "id": "nuke",
+      "ejemplo": "nuke canal"
+    },
+    {
+      "id": "factura_crear",
+      "ejemplo": "haz factura de 5000 a @Usuario por reparacion"
+    },
+    {
+      "id": "factura_lista",
+      "ejemplo": "muestra facturas de @Usuario"
+    },
+    {
+      "id": "factura_pagar",
+      "ejemplo": "paga la factura FAC-0001"
+    },
+    {
+      "id": "reparar",
+      "ejemplo": "repara el coche de @Usuario"
+    },
+    {
+      "id": "taximetro",
+      "ejemplo": "taximetro on"
+    },
+    {
+      "id": "multar",
+      "ejemplo": "multa a @Usuario 500 por exceso"
+    },
+    {
+      "id": "multas_ver",
+      "ejemplo": "ver multas de @Usuario"
+    },
+    {
+      "id": "pagar_multa",
+      "ejemplo": "paga la multa MLT-2024-0001"
+    },
+    {
+      "id": "esposar",
+      "ejemplo": "esposa a @Usuario"
+    },
+    {
+      "id": "desesposar",
+      "ejemplo": "desesposa a @Usuario"
+    },
+    {
+      "id": "cachear",
+      "ejemplo": "cachea a @Usuario"
+    },
+    {
+      "id": "escoltar",
+      "ejemplo": "escolta a @Usuario"
+    },
+    {
+      "id": "placa",
+      "ejemplo": "crea placa para @Usuario"
+    },
+    {
+      "id": "ver_id",
+      "ejemplo": "ver id de @Usuario"
+    },
+    {
+      "id": "licencia",
+      "ejemplo": "ver licencia de @Usuario"
+    },
+    {
+      "id": "poli_dispo",
+      "ejemplo": "ponte disponible como poli"
+    },
+    {
+      "id": "auxilio",
+      "ejemplo": "pide auxilio"
+    },
+    {
+      "id": "quitar_sucio",
+      "ejemplo": "quita dinero sucio a @Usuario"
+    },
+    {
+      "id": "banda_info",
+      "ejemplo": "ver info de la banda Black Cat"
+    },
+    {
+      "id": "banda_crear",
+      "ejemplo": "crea la banda Los Reyes tag REYES"
+    },
+    {
+      "id": "banda_invitar",
+      "ejemplo": "invita a @Usuario a la banda"
+    },
+    {
+      "id": "banda_expulsar",
+      "ejemplo": "expulsa a @Usuario de la banda"
+    },
+    {
+      "id": "banda_banco",
+      "ejemplo": "deposita 1000 en banco de banda"
+    },
+    {
+      "id": "banda_promover",
+      "ejemplo": "promueve a @Usuario en la banda"
+    },
+    {
+      "id": "banda_territorio",
+      "ejemplo": "ver territorios de la banda"
+    },
+    {
+      "id": "banda_guerra",
+      "ejemplo": "declara guerra a Los Santos"
+    },
+    {
+      "id": "personaje_ver",
+      "ejemplo": "ver personaje de @Usuario"
+    },
+    {
+      "id": "personaje_crear",
+      "ejemplo": "crea personaje Juan Lopez"
+    },
+    {
+      "id": "revivir",
+      "ejemplo": "revive a @Usuario"
+    },
+    {
+      "id": "hospital",
+      "ejemplo": "manda a @Usuario al hospital"
+    },
+    {
+      "id": "set_trabajo",
+      "ejemplo": "ponle trabajo policia a @Usuario"
+    },
+    {
+      "id": "inventario",
+      "ejemplo": "ver inventario de @Usuario"
+    },
+    {
+      "id": "ropa",
+      "ejemplo": "cambia ropa"
+    },
+    {
+      "id": "movil",
+      "ejemplo": "abre el movil"
+    },
+    {
+      "id": "vehiculo_dar",
+      "ejemplo": "dale coche a @Usuario"
+    },
+    {
+      "id": "vehiculo_sacar",
+      "ejemplo": "saca tu coche"
+    },
+    {
+      "id": "vehiculo_guardar",
+      "ejemplo": "guarda el coche"
+    },
+    {
+      "id": "drogas",
+      "ejemplo": "planta marihuana"
+    },
+    {
+      "id": "tienda_comprar",
+      "ejemplo": "compra pan"
+    },
+    {
+      "id": "tienda_vender",
+      "ejemplo": "vende droga"
+    },
+    {
+      "id": "trabajo",
+      "ejemplo": "trabaja como taxista"
+    },
+    {
+      "id": "atracar",
+      "ejemplo": "atraca la tienda badulaque"
+    },
+    {
+      "id": "secuestrar",
+      "ejemplo": "secuestra a @Usuario"
+    },
+    {
+      "id": "allanar",
+      "ejemplo": "allana casa en vinewood"
+    },
+    {
+      "id": "anuncio",
+      "ejemplo": "anuncia hola a todos"
+    },
+    {
+      "id": "encuesta",
+      "ejemplo": "crea encuesta si o no"
+    },
+    {
+      "id": "serverinfo",
+      "ejemplo": "info del servidor"
+    },
+    {
+      "id": "userinfo",
+      "ejemplo": "info de @Usuario"
+    },
+    {
+      "id": "roleinfo",
+      "ejemplo": "info del rol @Admin"
+    },
+    {
+      "id": "help",
+      "ejemplo": "que puedes hacer"
+    },
+    {
+      "id": "status",
+      "ejemplo": "status del servidor"
+    },
+    {
+      "id": "admin_on",
+      "ejemplo": "ponte admin on"
+    },
+    {
+      "id": "admin_off",
+      "ejemplo": "admin off"
+    },
+    {
+      "id": "pda",
+      "ejemplo": "abre la pda"
+    },
+    {
+      "id": "operativo",
+      "ejemplo": "inicia operativo"
+    },
+    {
+      "id": "generic",
+      "ejemplo": ""
+    }
+  ]
+}
