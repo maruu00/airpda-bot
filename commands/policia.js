@@ -294,6 +294,26 @@ async function execute(interaction, client) {
       });
     } catch {}
 
+    // Canal de multas: toda multa puesta (bot) sale también aquí
+    try {
+      const ch = await interaction.guild.channels.fetch('1500218947348336670').catch(() => null);
+      if (ch) {
+        const emb = new EmbedBuilder()
+          .setColor(carcel > 0 ? 0xef4444 : 0xf59e0b)
+          .setTitle(`🚔 Nueva ${carcel > 0 ? 'Arresto' : 'Multa'} — Bot`)
+          .addFields(
+            { name: '🎯 Ciudadano', value: `${ciudadano.getFullName()} (<@${target.id}>)`, inline: true },
+            { name: '👮 Agente', value: agente.getFullName(), inline: true },
+            { name: '💰 Importe', value: formatMoney(cantidad), inline: true },
+            { name: '⏰ Cárcel', value: carcel > 0 ? `${carcel} min` : 'Sin cárcel', inline: true },
+            { name: '📋 Motivo', value: motivo, inline: false },
+            { name: '🪪 ID', value: `\`${multa.multaId}\``, inline: true },
+          )
+          .setTimestamp();
+        await ch.send({ embeds: [emb] }).catch(() => {});
+      }
+    } catch {}
+
     const embed = new EmbedBuilder()
       .setColor(0xf59e0b)
       .setTitle('🚔 MULTA EMITIDA')

@@ -22,9 +22,57 @@ if (!global._inviteCacheInit) {
   }, 5000);
 }
 
+const MIN_ACCOUNT_AGE_DAYS = 5 * 30; // 5 meses ≈ 150 días
+
 module.exports = {
   name: 'guildMemberAdd',
   async execute(client, member) {
+    // ─── Antigüedad mínima de cuenta: 5 meses ──────────────────────────
+    if (!member.user.bot) {
+      const ageDays = (Date.now() - member.user.createdTimestamp) / 86_400_000;
+      if (ageDays < MIN_ACCOUNT_AGE_DAYS) {
+        const creadaEl = `<t:${Math.floor(member.user.createdTimestamp / 1000)}:D>`;
+        try {
+          const dmEmbed = new EmbedBuilder()
+            .setColor(0xef4444)
+            .setTitle(`⛔ Entrada denegada — ${member.guild.name}`)
+            .setDescription(
+              `Hola **${member.user.username}**, no has podido entrar a **${member.guild.name}**.\n\n` +
+              `**Motivo:** tu cuenta de Discord es demasiado nueva.\n` +
+              `> 📅 Tu cuenta fue creada el ${creadaEl} (hace **${Math.floor(ageDays)} días**).\n` +
+              `> ✅ Exigimos una antigüedad mínima de **5 meses (~150 días)**.\n\n` +
+              `Cuando tu cuenta cumpla la antigüedad podrás volver a entrar sin problema.\n` +
+              `Si crees que es un error, contacta con el staff desde otro servidor o por la web: https://airpda.xyz`
+            )
+            .setFooter({ text: 'AmericanRP · Control de acceso' })
+            .setTimestamp();
+          await member.send({ embeds: [dmEmbed] }).catch(() => {});
+        } catch {}
+        try {
+          await member.kick(`Cuenta con ${Math.floor(ageDays)} días de antigüedad — mínimo 5 meses (~150 días)`);
+        } catch {}
+        try {
+          const GuildConfig = require('../database/models/GuildConfig');
+          const gc = await GuildConfig.findOne({ guildId: member.guild.id }).lean().catch(() => null);
+          const chId = gc?.security?.logChannelId || '1528125569643057244';
+          const ch = await member.guild.channels.fetch(chId).catch(() => null);
+          if (ch) {
+            const logEmbed = new EmbedBuilder()
+              .setColor(0xef4444)
+              .setTitle('⛔ Entrada denegada — cuenta muy nueva')
+              .setDescription(
+                `**Usuario:** ${member.user.tag} (\`${member.id}\`)\n` +
+                `**Antigüedad:** ${Math.floor(ageDays)} días (mínimo 150)\n` +
+                `**Acción:** expulsado + DM enviado`
+              )
+              .setTimestamp();
+            await ch.send({ embeds: [logEmbed] }).catch(() => {});
+          }
+        } catch {}
+        return;
+      }
+    }
+
     // Anti-raid check
     const isRaid = await checkRaid(member);
     if (isRaid) return;
