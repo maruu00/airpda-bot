@@ -39,7 +39,10 @@ function scoreIntent(text, intent) {
 
 function parse(text) {
   const norm = normalize(text);
-  // Prioridades especiales
+  // Prioridades especiales — cura a todo el mundo debe ir primero
+  if (/cura.*tod|san.*tod|revive.*tod|curar.*tod/.test(norm)) {
+    const i = knowledge.find(k=>k.id==='curar_todos'); if(i) return { intent: 'curar_todos', confidence: 0.98, intentObj: i, bestScore: 10 };
+  }
   if (/desilencia|desmutea|unmute|quita.*silencio/.test(norm)) {
     const i = knowledge.find(k=>k.id==='desilenciar'); return { intent: 'desilenciar', confidence: 0.95, intentObj: i, bestScore: 10 };
   }

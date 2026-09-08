@@ -76,7 +76,9 @@ module.exports = [
   // === JUGADOR / PERSONAJE (10) ===
   { id: 'personaje_ver', keywords: ['personaje','ver.*personaje','perfil'], ejemplo: 'ver personaje de @Usuario' },
   { id: 'personaje_crear', keywords: ['crea','personaje','nuevo.*personaje'], ejemplo: 'crea personaje Juan Lopez' },
-  { id: 'revivir', keywords: ['revive','revivir','curar','resucita','reanimar'], ejemplo: 'revive a @Usuario' },
+  { id: 'curar_todos', keywords: ['cura.*todos','cura.*todo.*mundo','sana.*todos','revive.*todos','revivir.*todos','curar.*todos','cura.*mundo','sanar.*todos'], ejemplo: 'cura a todo el mundo' },
+  { id: 'curar_usuario', keywords: ['cura','curar','sana','sanar','revive','revivir','resucita','reanimar','cura.*usuario'], ejemplo: 'cura a @Usuario' },
+  { id: 'revivir', keywords: ['revive','revivir','curar','resucita','reanimar','cura'], ejemplo: 'revive a @Usuario' },
   { id: 'hospital', keywords: ['hospital','lleva.*hospital','manda.*hospital'], ejemplo: 'manda a @Usuario al hospital' },
   { id: 'set_trabajo', keywords: ['trabajo','empleo','asigna.*trabajo','contrata'], ejemplo: 'ponle trabajo policia a @Usuario' },
   { id: 'inventario', keywords: ['inventario','mochila','ver.*inventario','items'], ejemplo: 'ver inventario de @Usuario' },

@@ -100,6 +100,24 @@ async function exec(intent, entities, context) {
       return `📜 **Roles (top 20):**\n${roles}`;
     }
 
+    // === CURAR ===
+    if (intent === 'curar_todos') {
+      const Player = require('../../database/models/Player');
+      const res = await Player.updateMany({}, {$set:{salud:100, hambre:100, sed:100, energia:100, muerto:false, enHospital:false, tiempoHospital:null, ultimaActividad:new Date()}});
+      return `💚 Curados **${res.modifiedCount} jugadores** — salud, comida, bebida y energía al **100%**, fuera del hospital. ¡Todo el mundo sano!`;
+    }
+    if (intent === 'curar_usuario' || intent === 'revivir') {
+      const tid = userId || author.id;
+      const p = await getPlayer(tid, 'Usuario');
+      p.salud=100; p.muerto=false; p.enHospital=false; p.tiempoHospital=null; p.hambre=100; p.sed=100; p.energia=100; p.ultimaActividad=new Date(); await p.save();
+      return `💚 <@${tid}> curado — salud 100%, fuera del hospital, comida y energía al máximo.`;
+    }
+    if (intent === 'hospital') {
+      if (!userId) return '❌ Menciona a un usuario.';
+      const p = await getPlayer(userId, 'Usuario'); p.enHospital=true; p.tiempoHospital=new Date(Date.now()+5*60*1000); p.salud=Math.min(50,p.salud||0); await p.save();
+      return `🏥 <@${userId}> enviado al hospital (5 min).`;
+    }
+
     // === MODERACIÓN ===
     if (intent === 'silenciar' || intent === 'timeout') {
       if (!userId) return '❌ Menciona a un usuario: `!bot silencia a @Usuario 10m [motivo]`';

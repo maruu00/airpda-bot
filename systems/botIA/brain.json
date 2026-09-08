@@ -665,20 +665,62 @@
     "nuevo.*personaje": [
       "personaje_crear"
     ],
-    "revive": [
-      "revivir"
+    "cura.*todos": [
+      "curar_todos"
     ],
-    "revivir": [
+    "cura.*todo.*mundo": [
+      "curar_todos"
+    ],
+    "sana.*todos": [
+      "curar_todos"
+    ],
+    "revive.*todos": [
+      "curar_todos"
+    ],
+    "revivir.*todos": [
+      "curar_todos"
+    ],
+    "curar.*todos": [
+      "curar_todos"
+    ],
+    "cura.*mundo": [
+      "curar_todos"
+    ],
+    "sanar.*todos": [
+      "curar_todos"
+    ],
+    "cura": [
+      "curar_usuario",
       "revivir"
     ],
     "curar": [
+      "curar_usuario",
+      "revivir"
+    ],
+    "sana": [
+      "curar_usuario"
+    ],
+    "sanar": [
+      "curar_usuario"
+    ],
+    "revive": [
+      "curar_usuario",
+      "revivir"
+    ],
+    "revivir": [
+      "curar_usuario",
       "revivir"
     ],
     "resucita": [
+      "curar_usuario",
       "revivir"
     ],
     "reanimar": [
+      "curar_usuario",
       "revivir"
+    ],
+    "cura.*usuario": [
+      "curar_usuario"
     ],
     "hospital": [
       "hospital"
@@ -927,10 +969,10 @@
     ]
   },
   "stats": {
-    "intents": 86,
-    "keywords": 351,
-    "indexed": 287,
-    "trainedAt": "2026-09-08T13:11:21.112Z",
+    "intents": 88,
+    "keywords": 369,
+    "indexed": 299,
+    "trainedAt": "2026-09-08T13:20:09.513Z",
     "version": "2.0-infinita"
   },
   "knowledge": [
@@ -1165,6 +1207,14 @@
     {
       "id": "personaje_crear",
       "ejemplo": "crea personaje Juan Lopez"
+    },
+    {
+      "id": "curar_todos",
+      "ejemplo": "cura a todo el mundo"
+    },
+    {
+      "id": "curar_usuario",
+      "ejemplo": "cura a @Usuario"
     },
     {
       "id": "revivir",
